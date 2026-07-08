@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./shared/auth/AuthContext";
 import ProtectedRoute from "./shared/auth/ProtectedRoute";
 import LoginPage from "./shared/auth/LoginPage";
+import StagesListPage from "./modules/stages/pages/StagesListPage";
 
 export default function App() {
   return (
@@ -14,7 +15,7 @@ export default function App() {
             path="/stages"
             element={
               <ProtectedRoute>
-                <h1>Liste des stages (à construire)</h1>
+                <StagesListPage />
               </ProtectedRoute>
             }
           />
