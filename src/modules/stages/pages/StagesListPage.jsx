@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import apiClient from "../../../shared/api/apiClient";
 import { useAuth } from "../../../shared/auth/AuthContext";
+import StageForm from "../components/StageForm";
 
 export default function StagesListPage() {
   const { user } = useAuth();
@@ -8,12 +9,17 @@ export default function StagesListPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
+  const chargerStages = () => {
+    setLoading(true);
     apiClient
       .get("/stages")
       .then(({ data }) => setStages(data.data))
       .catch(() => setError("Impossible de charger les stages."))
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    chargerStages();
   }, []);
 
   const handleValider = async (stageId) => {
@@ -27,9 +33,14 @@ export default function StagesListPage() {
     }
   };
 
+  const handleStageCreated = (nouveauStage) => {
+    setStages((prev) => [nouveauStage, ...prev]);
+  };
+
   const peutValider = user?.roles?.some(
     (r) => r.name === "enseignant_encadreur" || r.name === "responsable_formation"
   );
+  const estEtudiant = user?.roles?.some((r) => r.name === "etudiant");
 
   if (loading) return <p>Chargement des stages...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
@@ -37,6 +48,9 @@ export default function StagesListPage() {
   return (
     <div style={{ maxWidth: 700, margin: "40px auto" }}>
       <h1>Mes stages</h1>
+
+      {estEtudiant && <StageForm onStageCreated={handleStageCreated} />}
+
       {stages.length === 0 && <p>Aucun stage pour le moment.</p>}
       <ul style={{ listStyle: "none", padding: 0 }}>
         {stages.map((stage) => (
