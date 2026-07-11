@@ -3,6 +3,7 @@ import { AuthProvider } from "./shared/auth/AuthContext";
 import ProtectedRoute from "./shared/auth/ProtectedRoute";
 import LoginPage from "./shared/auth/LoginPage";
 import StagesListPage from "./modules/stages/pages/StagesListPage";
+import EncadrementsListPage from "./modules/encadrements/pages/EncadrementsListPage";
 
 export default function App() {
   return (
@@ -16,6 +17,15 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <StagesListPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/encadrements"
+            element={
+              <ProtectedRoute>
+                <EncadrementsListPage />
               </ProtectedRoute>
             }
           />
