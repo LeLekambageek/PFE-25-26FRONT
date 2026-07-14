@@ -4,6 +4,7 @@ import ProtectedRoute from "./shared/auth/ProtectedRoute";
 import LoginPage from "./shared/auth/LoginPage";
 import StagesListPage from "./modules/stages/pages/StagesListPage";
 import EncadrementsListPage from "./modules/encadrements/pages/EncadrementsListPage";
+import MemoiresListPage from "./modules/memoires/pages/MemoiresListPage";
 
 export default function App() {
   return (
@@ -28,6 +29,15 @@ export default function App() {
                 <EncadrementsListPage />
               </ProtectedRoute>
             }
+          />
+
+          <Route
+            path="/memoires"
+            element={
+              <ProtectedRoute>
+                <MemoiresListPage />
+              </ProtectedRoute>
+           }
           />
 
           <Route path="/" element={<Navigate to="/login" replace />} />
