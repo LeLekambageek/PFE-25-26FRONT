@@ -8,6 +8,10 @@ export default function StagesListPage() {
   const [stages, setStages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [openJournalId, setOpenJournalId] = useState(null);
+  const [journalEntries, setJournalEntries] = useState([]);
+  const [journalLoading, setJournalLoading] = useState(false);
+  const [nouvelleEntree, setNouvelleEntree] = useState("");
 
   const chargerStages = () => {
     setLoading(true);
@@ -35,6 +39,36 @@ export default function StagesListPage() {
 
   const handleStageCreated = (nouveauStage) => {
     setStages((prev) => [nouveauStage, ...prev]);
+  };
+
+  const toggleJournal = async (stageId) => {
+    if (openJournalId === stageId) {
+      setOpenJournalId(null);
+      return;
+    }
+    setOpenJournalId(stageId);
+    setJournalLoading(true);
+    try {
+      const { data } = await apiClient.get(`/stages/${stageId}/journal`);
+      setJournalEntries(data);
+    } catch (err) {
+      setJournalEntries([]);
+    } finally {
+      setJournalLoading(false);
+    }
+  };
+
+  const handleAjouterEntree = async (stageId) => {
+    if (!nouvelleEntree.trim()) return;
+    try {
+      const { data } = await apiClient.post(`/stages/${stageId}/journal`, {
+        contenu: nouvelleEntree,
+      });
+      setJournalEntries((prev) => [data, ...prev]);
+      setNouvelleEntree("");
+    } catch (err) {
+      alert("Ajout impossible : " + (err.response?.data?.message || "erreur inconnue"));
+    }
   };
 
   const peutValider = user?.roles?.some(
@@ -67,8 +101,49 @@ export default function StagesListPage() {
             <p style={{ margin: "4px 0", color: "#666" }}>
               Statut : <span style={{ fontWeight: "bold" }}>{stage.statut}</span>
             </p>
-            {peutValider && stage.statut === "en_attente" && (
-              <button onClick={() => handleValider(stage.id)}>Valider</button>
+
+            <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
+              {peutValider && stage.statut === "en_attente" && (
+                <button onClick={() => handleValider(stage.id)}>Valider</button>
+              )}
+              <button onClick={() => toggleJournal(stage.id)}>
+                {openJournalId === stage.id ? "Fermer le journal" : "Voir le journal de bord"}
+              </button>
+            </div>
+
+            {openJournalId === stage.id && (
+              <div style={{ background: "#f9f9f9", borderRadius: 6, padding: 12, marginTop: 8 }}>
+                <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+                  <input
+                    type="text"
+                    placeholder="Nouvelle entrée..."
+                    value={nouvelleEntree}
+                    onChange={(e) => setNouvelleEntree(e.target.value)}
+                    style={{ flex: 1, padding: 6 }}
+                  />
+                  <button onClick={() => handleAjouterEntree(stage.id)}>Ajouter</button>
+                </div>
+
+                {journalLoading && <p>Chargement du journal...</p>}
+                {!journalLoading && journalEntries.length === 0 && (
+                  <p style={{ color: "#999" }}>Aucune entrée pour le moment.</p>
+                )}
+                {!journalLoading && journalEntries.length > 0 && (
+                  <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+                    {journalEntries.map((entry) => (
+                      <li
+                        key={entry.id}
+                        style={{ borderBottom: "1px solid #e0e0e0", padding: "6px 0" }}
+                      >
+                        <p style={{ margin: 0 }}>{entry.contenu}</p>
+                        <span style={{ fontSize: 12, color: "#999" }}>
+                          {entry.auteur?.name} — {new Date(entry.created_at).toLocaleDateString()}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
             )}
           </li>
         ))}
