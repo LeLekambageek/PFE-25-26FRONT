@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import apiClient from "../../../shared/api/apiClient";
 import { useAuth } from "../../../shared/auth/AuthContext";
 import MemoireForm from "../components/MemoireForm";
+import StatusBadge from "../../../shared/components/StatusBadge";
 
 export default function MemoiresListPage() {
   const { user } = useAuth();
@@ -82,62 +83,57 @@ export default function MemoiresListPage() {
   const peutCreer = user?.roles?.some((r) => r.name === "etudiant");
   const peutValiderOuAffecter = user?.roles?.some((r) => r.name === "responsable_formation");
 
-  if (loading) return <p>Chargement des memoires...</p>;
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
+  if (loading) return <div className="loading-state">Chargement des memoires...</div>;
+  if (error) return <p className="error-text">{error}</p>;
 
   return (
-    <div style={{ maxWidth: 700, margin: "40px auto" }}>
-      <h1>Memoires</h1>
+    <div>
+      <div className="page-header">
+        <h1>Mémoires</h1>
+        <p>Sujets de mémoire, validation et affectation d'un encadreur.</p>
+      </div>
 
       {peutCreer && <MemoireForm onMemoireCreated={handleMemoireCreated} />}
 
-      {memoires.length === 0 && <p>Aucun memoire pour le moment.</p>}
-      <ul style={{ listStyle: "none", padding: 0 }}>
-        {memoires.map((memoire) => (
-          <li
-            key={memoire.id}
-            style={{ border: "1px solid #ddd", borderRadius: 8, padding: 16, marginBottom: 12 }}
-          >
-            <strong>{memoire.titre}</strong>
-            <p style={{ margin: "4px 0", color: "#666" }}>
-              Statut : <span style={{ fontWeight: "bold" }}>{memoire.statut}</span>
-            </p>
+      {memoires.length === 0 && <p className="empty-state">Aucun mémoire pour le moment.</p>}
 
-            {editingId === memoire.id ? (
-              <div style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 8 }}>
-                <select
-                  value={selectedEnseignant}
-                  onChange={(e) => setSelectedEnseignant(e.target.value)}
-                  style={{ padding: 6 }}
-                >
-                  <option value="">-- Choisir un encadreur --</option>
-                  {enseignants.map((ens) => (
-                    <option key={ens.id} value={ens.id}>
-                      {ens.nom} ({ens.specialite})
-                    </option>
-                  ))}
-                </select>
-                <button onClick={() => confirmerAffectation(memoire.id)}>Confirmer</button>
-                <button onClick={annulerAffectation}>Annuler</button>
+      {memoires.map((memoire) => (
+        <div key={memoire.id} className={`dossier dossier-full status-${memoire.statut}`}>
+          <div className="dossier-head">
+            <p className="dossier-title">{memoire.titre}</p>
+            <StatusBadge statut={memoire.statut} />
+          </div>
+
+          {editingId === memoire.id ? (
+            <div className="inline-edit">
+              <select value={selectedEnseignant} onChange={(e) => setSelectedEnseignant(e.target.value)}>
+                <option value="">-- Choisir un encadreur --</option>
+                {enseignants.map((ens) => (
+                  <option key={ens.id} value={ens.id}>
+                    {ens.nom} ({ens.specialite})
+                  </option>
+                ))}
+              </select>
+              <button className="btn btn-primary" onClick={() => confirmerAffectation(memoire.id)}>Confirmer</button>
+              <button className="btn btn-ghost" onClick={annulerAffectation}>Annuler</button>
+            </div>
+          ) : (
+            peutValiderOuAffecter && (
+              <div className="actions-row">
+                {memoire.statut === "propose" && (
+                  <>
+                    <button className="btn btn-primary" onClick={() => handleValider(memoire.id)}>Valider</button>
+                    <button className="btn btn-danger" onClick={() => handleRejeter(memoire.id)}>Rejeter</button>
+                  </>
+                )}
+                {memoire.statut === "valide" && (
+                  <button className="btn" onClick={() => ouvrirAffectation(memoire.id)}>Affecter un encadreur</button>
+                )}
               </div>
-            ) : (
-              peutValiderOuAffecter && (
-                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                  {memoire.statut === "propose" && (
-                    <>
-                      <button onClick={() => handleValider(memoire.id)}>Valider</button>
-                      <button onClick={() => handleRejeter(memoire.id)}>Rejeter</button>
-                    </>
-                  )}
-                  {memoire.statut === "valide" && (
-                    <button onClick={() => ouvrirAffectation(memoire.id)}>Affecter un encadreur</button>
-                  )}
-                </div>
-              )
-            )}
-          </li>
-        ))}
-      </ul>
+            )
+          )}
+        </div>
+      ))}
     </div>
   );
 }

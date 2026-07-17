@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import apiClient from "../../../shared/api/apiClient";
 import { useAuth } from "../../../shared/auth/AuthContext";
 import StageForm from "../components/StageForm";
+import StatusBadge from "../../../shared/components/StatusBadge";
 
 export default function StagesListPage() {
   const { user } = useAuth();
@@ -51,7 +52,7 @@ export default function StagesListPage() {
     try {
       const { data } = await apiClient.get(`/stages/${stageId}/journal`);
       setJournalEntries(data);
-    } catch (err) {
+    } catch {
       setJournalEntries([]);
     } finally {
       setJournalLoading(false);
@@ -76,78 +77,74 @@ export default function StagesListPage() {
   );
   const estEtudiant = user?.roles?.some((r) => r.name === "etudiant");
 
-  if (loading) return <p>Chargement des stages...</p>;
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
+  if (loading) return <div className="loading-state">Chargement des stages...</div>;
+  if (error) return <p className="error-text">{error}</p>;
 
   return (
-    <div style={{ maxWidth: 700, margin: "40px auto" }}>
-      <h1>Mes stages</h1>
+    <div>
+      <div className="page-header">
+        <h1>Mes stages</h1>
+        <p>Suivi de vos stages affectés et de leur journal de bord.</p>
+      </div>
 
       {estEtudiant && <StageForm onStageCreated={handleStageCreated} />}
 
-      {stages.length === 0 && <p>Aucun stage pour le moment.</p>}
-      <ul style={{ listStyle: "none", padding: 0 }}>
-        {stages.map((stage) => (
-          <li
-            key={stage.id}
-            style={{
-              border: "1px solid #ddd",
-              borderRadius: 8,
-              padding: 16,
-              marginBottom: 12,
-            }}
-          >
-            <strong>{stage.titre}</strong>
-            <p style={{ margin: "4px 0", color: "#666" }}>
-              Statut : <span style={{ fontWeight: "bold" }}>{stage.statut}</span>
-            </p>
+      {stages.length === 0 && <p className="empty-state">Aucun stage pour le moment.</p>}
 
-            <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
-              {peutValider && stage.statut === "en_attente" && (
-                <button onClick={() => handleValider(stage.id)}>Valider</button>
-              )}
-              <button onClick={() => toggleJournal(stage.id)}>
-                {openJournalId === stage.id ? "Fermer le journal" : "Voir le journal de bord"}
+      {stages.map((stage) => (
+        <div key={stage.id} className={`dossier dossier-full status-${stage.statut}`}>
+          <div className="dossier-head">
+            <p className="dossier-title">{stage.titre}</p>
+            <StatusBadge statut={stage.statut} />
+          </div>
+
+          <div className="actions-row">
+            {peutValider && stage.statut === "en_attente" && (
+              <button className="btn btn-primary" onClick={() => handleValider(stage.id)}>
+                Valider
               </button>
-            </div>
+            )}
+            <button className="btn" onClick={() => toggleJournal(stage.id)}>
+              {openJournalId === stage.id ? "Fermer le journal" : "Voir le journal de bord"}
+            </button>
+          </div>
 
-            {openJournalId === stage.id && (
-              <div style={{ background: "#f9f9f9", borderRadius: 6, padding: 12, marginTop: 8 }}>
-                <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
-                  <input
-                    type="text"
-                    placeholder="Nouvelle entrée..."
-                    value={nouvelleEntree}
-                    onChange={(e) => setNouvelleEntree(e.target.value)}
-                    style={{ flex: 1, padding: 6 }}
-                  />
-                  <button onClick={() => handleAjouterEntree(stage.id)}>Ajouter</button>
-                </div>
+          {openJournalId === stage.id && (
+            <div className="subpanel">
+              <div className="subpanel-form">
+                <input
+                  type="text"
+                  placeholder="Nouvelle entrée..."
+                  value={nouvelleEntree}
+                  onChange={(e) => setNouvelleEntree(e.target.value)}
+                />
+                <button className="btn btn-primary" onClick={() => handleAjouterEntree(stage.id)}>
+                  Ajouter
+                </button>
+              </div>
 
-                {journalLoading && <p>Chargement du journal...</p>}
-                {!journalLoading && journalEntries.length === 0 && (
-                  <p style={{ color: "#999" }}>Aucune entrée pour le moment.</p>
-                )}
-                {!journalLoading && journalEntries.length > 0 && (
-                  <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-                    {journalEntries.map((entry) => (
-                      <li
-                        key={entry.id}
-                        style={{ borderBottom: "1px solid #e0e0e0", padding: "6px 0" }}
-                      >
-                        <p style={{ margin: 0 }}>{entry.contenu}</p>
-                        <span style={{ fontSize: 12, color: "#999" }}>
+              {journalLoading && <p className="loading-state empty-state--compact">Chargement du journal...</p>}
+              {!journalLoading && journalEntries.length === 0 && (
+                <p className="empty-state empty-state--compact">Aucune entrée pour le moment.</p>
+              )}
+              {!journalLoading && journalEntries.length > 0 && (
+                <ul className="entry-list">
+                  {journalEntries.map((entry) => (
+                    <li key={entry.id} className="entry-row">
+                      <div>
+                        <p className="entry-text">{entry.contenu}</p>
+                        <span className="entry-meta">
                           {entry.auteur?.name} — {new Date(entry.created_at).toLocaleDateString()}
                         </span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            )}
-          </li>
-        ))}
-      </ul>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+        </div>
+      ))}
     </div>
   );
 }

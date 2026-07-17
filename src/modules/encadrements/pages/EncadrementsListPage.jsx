@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import apiClient from "../../../shared/api/apiClient";
 import { useAuth } from "../../../shared/auth/AuthContext";
 import EncadrementForm from "../components/EncadrementForm";
+import StatusBadge from "../../../shared/components/StatusBadge";
 
 export default function EncadrementsListPage() {
   const { user } = useAuth();
@@ -98,63 +99,58 @@ export default function EncadrementsListPage() {
   );
   const peutGererEnseignant = user?.roles?.some((r) => r.name === "enseignant_encadreur");
 
-  if (loading) return <p>Chargement des encadrements...</p>;
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
+  if (loading) return <div className="loading-state">Chargement des encadrements...</div>;
+  if (error) return <p className="error-text">{error}</p>;
 
   return (
-    <div style={{ maxWidth: 700, margin: "40px auto" }}>
-      <h1>Encadrements</h1>
+    <div>
+      <div className="page-header">
+        <h1>Encadrements</h1>
+        <p>Suivi de la relation étudiant-encadreur (stage et mémoire).</p>
+      </div>
 
       {peutCreer && <EncadrementForm onEncadrementCreated={handleEncadrementCreated} />}
 
-      {encadrements.length === 0 && <p>Aucun encadrement pour le moment.</p>}
-      <ul style={{ listStyle: "none", padding: 0 }}>
-        {encadrements.map((enc) => (
-          <li
-            key={enc.id}
-            style={{ border: "1px solid #ddd", borderRadius: 8, padding: 16, marginBottom: 12 }}
-          >
-            <strong>Encadrement #{enc.id} — {enc.type}</strong>
-            <p style={{ margin: "4px 0", color: "#666" }}>
-              Statut : <span style={{ fontWeight: "bold" }}>{enc.statut}</span>
-            </p>
+      {encadrements.length === 0 && <p className="empty-state">Aucun encadrement pour le moment.</p>}
 
-            {editingId === enc.id ? (
-              <div style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 8 }}>
-                <select
-                  value={selectedEnseignant}
-                  onChange={(e) => setSelectedEnseignant(e.target.value)}
-                  style={{ padding: 6 }}
-                >
-                  <option value="">-- Choisir un enseignant --</option>
-                  {enseignants.map((ens) => (
-                    <option key={ens.id} value={ens.id}>
-                      {ens.nom} ({ens.specialite})
-                    </option>
-                  ))}
-                </select>
-                <button onClick={() => confirmerModification(enc.id)}>Confirmer</button>
-                <button onClick={annulerEdition}>Annuler</button>
-              </div>
-            ) : (
-              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                {peutAjouterEntree && (
-                  <button onClick={() => handleAjouterEntree(enc.id)}>Ajouter une entrée</button>
-                )}
-                {peutGererEnseignant && (
-                  <button onClick={() => handlePlanifierRdv(enc.id)}>Planifier un rendez-vous</button>
-                )}
-                {peutModifier && (
-                  <button onClick={() => ouvrirEdition(enc)}>Modifier l'enseignant</button>
-                )}
-                {peutGererEnseignant && enc.statut === "actif" && (
-                  <button onClick={() => handleCloturer(enc.id)}>Clôturer</button>
-                )}
-              </div>
-            )}
-          </li>
-        ))}
-      </ul>
+      {encadrements.map((enc) => (
+        <div key={enc.id} className={`dossier dossier-full status-${enc.statut}`}>
+          <div className="dossier-head">
+            <p className="dossier-title">Encadrement #{enc.id} — {enc.type}</p>
+            <StatusBadge statut={enc.statut} />
+          </div>
+
+          {editingId === enc.id ? (
+            <div className="inline-edit">
+              <select value={selectedEnseignant} onChange={(e) => setSelectedEnseignant(e.target.value)}>
+                <option value="">-- Choisir un enseignant --</option>
+                {enseignants.map((ens) => (
+                  <option key={ens.id} value={ens.id}>
+                    {ens.nom} ({ens.specialite})
+                  </option>
+                ))}
+              </select>
+              <button className="btn btn-primary" onClick={() => confirmerModification(enc.id)}>Confirmer</button>
+              <button className="btn btn-ghost" onClick={annulerEdition}>Annuler</button>
+            </div>
+          ) : (
+            <div className="actions-row">
+              {peutAjouterEntree && (
+                <button className="btn" onClick={() => handleAjouterEntree(enc.id)}>Ajouter une entrée</button>
+              )}
+              {peutGererEnseignant && (
+                <button className="btn" onClick={() => handlePlanifierRdv(enc.id)}>Planifier un rendez-vous</button>
+              )}
+              {peutModifier && (
+                <button className="btn" onClick={() => ouvrirEdition(enc)}>Modifier l'enseignant</button>
+              )}
+              {peutGererEnseignant && enc.statut === "actif" && (
+                <button className="btn btn-danger" onClick={() => handleCloturer(enc.id)}>Clôturer</button>
+              )}
+            </div>
+          )}
+        </div>
+      ))}
     </div>
   );
 }

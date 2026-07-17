@@ -43,12 +43,12 @@ export default function EncadrementForm({ onEncadrementCreated }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ border: "1px solid #ddd", borderRadius: 8, padding: 16, marginBottom: 20 }}>
-      <h2 style={{ marginTop: 0 }}>Créer un encadrement</h2>
+    <form onSubmit={handleSubmit} className="card">
+      <h2>Créer un encadrement</h2>
 
-      <div style={{ marginBottom: 12 }}>
+      <div className="form-group">
         <label>Étudiant</label>
-        <select value={etudiantId} onChange={(e) => setEtudiantId(e.target.value)} required style={{ width: "100%", padding: 8 }}>
+        <select value={etudiantId} onChange={(e) => setEtudiantId(e.target.value)} required>
           <option value="">-- Choisir --</option>
           {etudiants.map((e) => (
             <option key={e.id} value={e.id}>{e.nom} ({e.matricule})</option>
@@ -56,9 +56,9 @@ export default function EncadrementForm({ onEncadrementCreated }) {
         </select>
       </div>
 
-      <div style={{ marginBottom: 12 }}>
+      <div className="form-group">
         <label>Enseignant</label>
-        <select value={enseignantId} onChange={(e) => setEnseignantId(e.target.value)} required style={{ width: "100%", padding: 8 }}>
+        <select value={enseignantId} onChange={(e) => setEnseignantId(e.target.value)} required>
           <option value="">-- Choisir --</option>
           {enseignants.map((e) => (
             <option key={e.id} value={e.id}>{e.nom} ({e.specialite})</option>
@@ -66,17 +66,17 @@ export default function EncadrementForm({ onEncadrementCreated }) {
         </select>
       </div>
 
-      <div style={{ marginBottom: 12 }}>
+      <div className="form-group">
         <label>Type</label>
-        <select value={type} onChange={(e) => setType(e.target.value)} style={{ width: "100%", padding: 8 }}>
+        <select value={type} onChange={(e) => setType(e.target.value)}>
           <option value="stage">Stage</option>
           <option value="memoire">Mémoire</option>
         </select>
       </div>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <p className="error-text">{error}</p>}
 
-      <button type="submit" disabled={loading}>
+      <button type="submit" className="btn btn-primary" disabled={loading}>
         {loading ? "Envoi..." : "Créer l'encadrement"}
       </button>
     </form>

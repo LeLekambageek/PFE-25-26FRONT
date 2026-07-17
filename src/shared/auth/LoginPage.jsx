@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
+import { roleHomePath } from "../roleHomePath";
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -8,47 +9,56 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+    setLoading(true);
     try {
-      await login(email, password);
-      navigate("/stages");
-    } catch (err) {
+      const user = await login(email, password);
+      navigate(roleHomePath(user), { replace: true });
+    } catch {
       setError("Email ou mot de passe incorrect.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div style={{ maxWidth: 360, margin: "80px auto" }}>
-      <h1>Connexion</h1>
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: 12 }}>
-          <label>Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            style={{ width: "100%", padding: 8 }}
-          />
-        </div>
-        <div style={{ marginBottom: 12 }}>
-          <label>Mot de passe</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            style={{ width: "100%", padding: 8 }}
-          />
-        </div>
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        <button type="submit" style={{ padding: "8px 16px" }}>
-          Se connecter
-        </button>
-      </form>
+    <div className="login-shell">
+      <div className="login-card">
+        <img src="/logo.png" alt="EPF Africa" className="login-logo" />
+        <p className="login-brand">EPF Africa</p>
+        <p className="login-subtitle">Plateforme de gestion académique</p>
+
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label>Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>Mot de passe</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+
+          {error && <p className="error-text">{error}</p>}
+
+          <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
+            {loading ? "Connexion..." : "Se connecter"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
