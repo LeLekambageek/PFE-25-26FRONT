@@ -1,8 +1,24 @@
 import { useState, useEffect } from "react";
 import { juryApi } from "../../../shared/api/juryApi";
 import { useAuth } from "../../../shared/auth/AuthContext";
-import NotificationBell from "../../../shared/components/NotificationBell";
 import StatusBadge from "../../../shared/components/StatusBadge";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Calendar,
+  Award,
+  BookOpen,
+  FileDown,
+  ChevronRight,
+  TrendingUp,
+  Clock,
+  User,
+  Check,
+  CheckCircle,
+  X,
+  AlertCircle,
+  Layers,
+  GraduationCap
+} from "lucide-react";
 
 const CRITERES = [
   { key: "ecrit", label: "Qualité du document écrit", desc: "Clarté, structure, rigueur scientifique et rédaction" },
@@ -161,69 +177,101 @@ export default function JuryDashboard() {
   const estSoutenanceTerminee = selectedSoutenance?.statut === "terminee";
   const estLectureSeule = notesValidees || estSoutenanceTerminee;
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: { staggerChildren: 0.05 }
+    }
+  };
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 25 } }
+  };
+
   return (
-    <div>
-      <div className="page-header">
-        <div>
-          <h1>Tableau de bord Jury</h1>
-          <p>Consultez les mémoires et attribuez vos évaluations pour les soutenances de votre session.</p>
-        </div>
-        <NotificationBell />
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
+      className="space-y-8 w-full"
+    >
+      {/* Title block */}
+      <div className="flex flex-col text-left">
+        <h1 className="text-2xl font-bold text-[#1C0A10] tracking-tight">Tableau de bord Jury</h1>
+        <p className="text-sm text-gray-500 mt-1">
+          Consultez les mémoires de fin d'études et attribuez vos évaluations pour les soutenances de votre session.
+        </p>
       </div>
 
-      {error && <p className="error-text">{error}</p>}
+      {error && (
+        <div className="card border border-red-500/30 bg-red-500/10 text-red-600 p-4 rounded-xl flex items-center gap-2">
+          <AlertCircle size={16} />
+          <span>{error}</span>
+        </div>
+      )}
 
       {/* Main Layout Grid */}
-      <div style={{ display: "grid", gridTemplateColumns: selectedSoutenance ? "1fr 1.2fr" : "1fr", gap: 24, alignItems: "start" }}>
-
+      <div className={`grid grid-cols-1 ${selectedSoutenance ? "xl:grid-cols-2" : "grid-cols-1"} gap-8 items-start w-full`}>
+        
         {/* Left Column: Assigned Defenses List */}
-        <div className="card" style={{ padding: 24 }}>
-          <h2>Soutenances Assignées</h2>
+        <motion.div variants={cardVariants} className="card p-8 shadow-xl">
+          <div className="flex items-center gap-2.5 mb-6 pb-4 border-b border-[#E8D6DA]">
+            <Calendar size={22} className="text-[#FF0000]" />
+            <h2 className="text-lg font-bold text-[#1C0A10]">Soutenances Assignées</h2>
+          </div>
+
           {loading && !selectedSoutenance && <div className="loading-state">Chargement...</div>}
+          
           {!loading && soutenances.length === 0 ? (
             <p className="empty-state">Aucune soutenance ne vous est affectée pour le moment.</p>
           ) : (
-            <div style={{ display: "grid", gap: 14, marginTop: 16 }}>
+            <div className="grid grid-cols-1 gap-4">
               {soutenances.map((s) => {
                 const monJuryRow = s.jury?.find((j) => j.user_id === user.id);
                 const estNotesValidees = monJuryRow?.notes_validees || false;
                 const estActive = selectedSoutenance?.id === s.id;
 
                 return (
-                  <div
-                    key={s.id}
-                    className={`dossier status-${s.statut}`}
-                    style={{
-                      flexDirection: "column",
-                      alignItems: "stretch",
-                      cursor: "pointer",
-                      borderColor: estActive ? "var(--gts-secondary)" : "var(--border)",
-                      boxShadow: estActive ? "0 4px 15px rgba(139, 92, 246, 0.15)" : ""
-                    }}
+                  <div 
+                    key={s.id} 
+                    className={`dossier flex flex-col justify-between p-6 border border-[#E8D6DA] hover:border-[#FF0000]/20 transition-all rounded-xl gap-4 cursor-pointer bg-white ${
+                      estActive ? "ring-2 ring-[#FF0000] border-transparent" : "shadow-sm"
+                    }`}
                     onClick={() => handleSelectSoutenance(s)}
                   >
-                    <div className="dossier-head" style={{ marginBottom: 4 }}>
-                      <p className="dossier-title" style={{ fontSize: 14, fontWeight: 700 }}>
-                        Étudiant : {s.memoire?.etudiant?.user?.name || s.memoire?.etudiant?.name || "Inconnu"}
-                      </p>
+                    <div className="flex justify-between items-start gap-4 mb-2 pb-2 border-b border-[#E8D6DA] border-dashed">
+                      <div className="flex items-center gap-2">
+                        <GraduationCap size={18} className="text-gray-400" />
+                        <span className="text-sm font-bold text-gray-800">
+                          {s.memoire?.etudiant?.user?.name || s.memoire?.etudiant?.name || "Étudiant Inconnu"}
+                        </span>
+                      </div>
                       <StatusBadge statut={s.statut} />
                     </div>
-                    <p className="dossier-meta" style={{ fontStyle: "italic", fontSize: 12 }}>
-                      "{s.memoire?.titre}"
-                    </p>
-                    <p className="dossier-meta" style={{ marginTop: 4 }}>
-                      Le {new Date(s.date_soutenance).toLocaleDateString("fr-FR")} à {s.heure_debut} — Salle {s.salle}
-                    </p>
-                    <div style={{ marginTop: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+
+                    <div className="space-y-3">
+                      <p className="text-sm text-gray-700 italic font-semibold leading-relaxed">
+                        "{s.memoire?.titre}"
+                      </p>
+                      <div className="flex items-center gap-2 text-xs text-gray-500 font-medium">
+                        <Clock size={14} className="text-gray-400" />
+                        <span>Le {new Date(s.date_soutenance).toLocaleDateString("fr-FR")} à {s.heure_debut} — Salle : {s.salle}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-between items-center pt-3 border-t border-[#E8D6DA] border-dashed">
                       {estNotesValidees ? (
-                        <span style={{ fontSize: 11, color: "var(--success)", fontWeight: "bold" }}>✓ Notes Validées</span>
+                        <span className="text-xs text-emerald-600 font-bold flex items-center gap-1">✓ Notes Validées</span>
                       ) : s.statut === "terminee" ? (
-                        <span style={{ fontSize: 11, color: "var(--neutral)", fontWeight: "bold" }}>Soutenance Terminée</span>
+                        <span className="text-xs text-gray-400 font-bold">Clôturée</span>
                       ) : (
-                        <span style={{ fontSize: 11, color: "var(--warning)" }}>✍️ Évaluation en cours</span>
+                        <span className="text-xs text-amber-600 font-bold flex items-center gap-1">✍️ Évaluation en cours</span>
                       )}
-                      <span style={{ fontSize: 12, color: "var(--gts-secondary)", fontWeight: "bold" }}>
-                        {estActive ? "Consultation active ●" : "Cliquer pour évaluer →"}
+                      
+                      <span className="text-xs text-[#FF0000] font-bold flex items-center gap-1">
+                        {estActive ? "Consultation active ●" : "Évaluer →"}
                       </span>
                     </div>
                   </div>
@@ -231,131 +279,127 @@ export default function JuryDashboard() {
               })}
             </div>
           )}
-        </div>
+        </motion.div>
 
         {/* Right Column: Evaluation Workspace */}
-        {selectedSoutenance && (
-          <div className="card" style={{ padding: 28, position: "sticky", top: 20 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", marginBottom: 16 }}>
-              <div>
-                <h2>Workspace d'Évaluation</h2>
-                <p className="dossier-meta" style={{ marginTop: 4 }}>
-                  Soutenance de <strong>{selectedSoutenance.memoire?.etudiant?.name}</strong>
-                </p>
-              </div>
-              <button className="btn btn-ghost" onClick={() => setSelectedSoutenance(null)} style={{ minHeight: 30 }}>
-                Fermer
-              </button>
-            </div>
-
-            {/* Document download box */}
-            <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 8, padding: 14, marginBottom: 20 }}>
-              <p className="dossier-title" style={{ fontSize: 13 }}>Mémoire déposé :</p>
-              <p className="dossier-meta" style={{ fontStyle: "italic", marginTop: 2, marginBottom: 8 }}>
-                "{selectedSoutenance.memoire?.titre}"
-              </p>
-              <button
-                className="btn btn-primary"
-                style={{ width: "100%", minHeight: 36, fontSize: 13 }}
-                onClick={() => handleDownloadMemoire(selectedSoutenance.id)}
-              >
-                Télécharger le document mémoire PDF 📥
-              </button>
-            </div>
-
-            {/* Evaluation Form Grid */}
-            <div style={{ display: "grid", gap: 16 }}>
-              {CRITERES.map((c) => (
-                <div key={c.key} style={{ borderBottom: "1px solid var(--border)", paddingBottom: 14 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-                    <label style={{ fontWeight: "bold", fontSize: 13, color: "var(--navy)" }}>{c.label}</label>
-                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                      <input
-                        type="number"
-                        min="0"
-                        max="20"
-                        step="0.5"
-                        value={notes[c.key].note}
-                        onChange={(e) => setNoteField(c.key, "note", e.target.value)}
-                        disabled={estLectureSeule}
-                        required
-                        style={{ width: 70, minHeight: 32, padding: "4px 8px", fontSize: 14, textAlign: "center" }}
-                      />
-                      <span style={{ fontSize: 12, color: "var(--ink-muted)" }}>/ 20</span>
-                    </div>
-                  </div>
-                  <p className="dossier-meta" style={{ fontSize: 11, marginBottom: 6 }}>{c.desc}</p>
-                  <input
-                    type="text"
-                    placeholder="Observations, points clés..."
-                    value={notes[c.key].commentaire}
-                    onChange={(e) => setNoteField(c.key, "commentaire", e.target.value)}
-                    disabled={estLectureSeule}
-                    style={{ width: "100%", minHeight: 34, padding: "6px 10px", fontSize: 12.5 }}
-                  />
-                </div>
-              ))}
-            </div>
-
-            {/* Real-time calculated general average */}
-            <div
-              style={{
-                marginTop: 20,
-                padding: "16px 20px",
-                borderRadius: 8,
-                background: notesValidees ? "var(--success-bg)" : estSoutenanceTerminee ? "var(--neutral-bg)" : "var(--warning-bg)",
-                border: "1px solid transparent",
-                borderColor: notesValidees ? "var(--success)" : estSoutenanceTerminee ? "var(--border)" : "var(--warning)",
-                textAlign: "center"
-              }}
+        <AnimatePresence>
+          {selectedSoutenance && (
+            <motion.div 
+              variants={cardVariants}
+              className="card p-8 shadow-2xl xl:sticky xl:top-24 bg-[#FCF9FA] border border-[#E8D6DA] rounded-3xl"
             >
-              <div style={{ fontSize: 12, color: "var(--ink-soft)", fontWeight: "bold", textTransform: "uppercase", letterSpacing: 0.5 }}>
-                Moyenne Générale Estimée
-              </div>
-              <div style={{ fontSize: 32, fontWeight: 800, color: "var(--navy)", margin: "4px 0" }}>
-                {moyennePrint} <span style={{ fontSize: 16, fontWeight: 400, color: "var(--ink-muted)" }}>/ 20</span>
+              <div className="flex justify-between items-start gap-4 mb-6 pb-4 border-b border-[#E8D6DA]">
+                <div>
+                  <h2 className="text-lg font-bold text-[#1C0A10]">Workspace d'Évaluation</h2>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Candidat : <strong className="text-gray-700 font-semibold">{selectedSoutenance.memoire?.etudiant?.name}</strong>
+                  </p>
+                </div>
+                <button 
+                  className="p-1 text-gray-400 hover:text-[#FF0000] rounded-lg transition-colors cursor-pointer"
+                  onClick={() => setSelectedSoutenance(null)}
+                >
+                  <X size={20} />
+                </button>
               </div>
 
-              {notesValidees ? (
-                <p style={{ color: "var(--success)", fontSize: 12, fontWeight: "bold", margin: 0 }}>
-                  ✓ Notes Validées Définitivement (Évaluation Transmise)
-                </p>
-              ) : estSoutenanceTerminee ? (
-                <p style={{ color: "var(--neutral)", fontSize: 12, fontWeight: "bold", margin: 0 }}>
-                  🔒 Soutenance Clôturée (Notation verrouillée)
-                </p>
-              ) : (
-                <p style={{ color: "var(--warning)", fontSize: 12, margin: 0 }}>
-                  ✍️ En cours de notation. Pensez à enregistrer ou valider.
-                </p>
+              {/* Document download box */}
+              <div className="bg-[#F4E7EB] border border-[#E8D6DA] rounded-xl p-5 mb-6 space-y-3">
+                <div className="space-y-1">
+                  <span className="text-xs uppercase font-bold text-gray-500">Mémoire Déposé</span>
+                  <p className="text-xs text-gray-700 font-semibold italic">
+                    "{selectedSoutenance.memoire?.titre}"
+                  </p>
+                </div>
+                <button 
+                  className="btn btn-primary w-full py-3 text-xs font-semibold flex items-center justify-center gap-2"
+                  onClick={() => handleDownloadMemoire(selectedSoutenance.id)}
+                >
+                  <FileDown size={14} /> Télécharger le Mémoire PDF
+                </button>
+              </div>
+
+              {/* Evaluation Form Grid */}
+              <div className="space-y-6">
+                {CRITERES.map((c) => (
+                  <div key={c.key} className="space-y-3 pb-5 border-b border-[#E8D6DA] last:border-0 last:pb-0">
+                    <div className="flex justify-between items-center">
+                      <label className="text-sm font-bold text-gray-700">{c.label}</label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="number"
+                          min="0"
+                          max="20"
+                          step="0.5"
+                          className="w-16 text-center border-2 border-[#E8D6DA] rounded-lg px-2 py-1 text-sm font-extrabold focus:border-red-500"
+                          value={notes[c.key].note}
+                          onChange={(e) => setNoteField(c.key, "note", e.target.value)}
+                          disabled={estLectureSeule}
+                          required
+                        />
+                        <span className="text-xs text-gray-400 font-semibold">/ 20</span>
+                      </div>
+                    </div>
+                    <p className="text-xs text-gray-500 leading-normal">{c.desc}</p>
+                    <input
+                      type="text"
+                      placeholder="Commentaires ou points forts/faibles..."
+                      className="w-full text-xs"
+                      value={notes[c.key].commentaire}
+                      onChange={(e) => setNoteField(c.key, "commentaire", e.target.value)}
+                      disabled={estLectureSeule}
+                    />
+                  </div>
+                ))}
+              </div>
+
+              {/* Real-time calculated general average */}
+              <div 
+                className={`mt-6 p-6 rounded-2xl border text-center space-y-1.5 ${
+                  notesValidees 
+                    ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-700" 
+                    : estSoutenanceTerminee 
+                    ? "bg-[#F4E7EB] border-[#E8D6DA] text-gray-700" 
+                    : "bg-amber-500/10 border-amber-500/20 text-amber-700"
+                }`}
+              >
+                <span className="text-xs uppercase font-bold tracking-wider">Moyenne Générale Estimée</span>
+                <div className="text-4xl font-extrabold my-2">
+                  {moyennePrint} <span className="text-lg font-normal text-gray-400">/ 20</span>
+                </div>
+                
+                {notesValidees ? (
+                  <p className="text-xs font-bold">✓ Notes validées définitivement et transmises à l'administration.</p>
+                ) : estSoutenanceTerminee ? (
+                  <p className="text-xs font-bold">🔒 Session de soutenance clôturée (en lecture seule).</p>
+                ) : (
+                  <p className="text-xs font-medium">Brouillon d'évaluation en cours. Enregistrez ou verrouillez ci-dessous.</p>
+                )}
+              </div>
+
+              {/* Submissions buttons */}
+              {!estLectureSeule && (
+                <div className="grid grid-cols-2 gap-4 mt-6">
+                  <button 
+                    className="btn px-4 py-3 text-xs font-semibold" 
+                    onClick={() => handleSaveNotes(false)}
+                    disabled={submitting}
+                  >
+                    Enregistrer Brouillon
+                  </button>
+                  <button 
+                    className="btn btn-primary px-4 py-3 text-xs font-semibold" 
+                    onClick={() => handleSaveNotes(true)}
+                    disabled={submitting}
+                  >
+                    Valider Définitivement
+                  </button>
+                </div>
               )}
-            </div>
-
-            {/* Submissions buttons */}
-            {!estLectureSeule && (
-              <div className="actions-row" style={{ marginTop: 20 }}>
-                <button
-                  className="btn"
-                  style={{ flex: 1 }}
-                  onClick={() => handleSaveNotes(false)}
-                  disabled={submitting}
-                >
-                  Enregistrer Brouillon
-                </button>
-                <button
-                  className="btn btn-primary"
-                  style={{ flex: 1 }}
-                  onClick={() => handleSaveNotes(true)}
-                  disabled={submitting}
-                >
-                  Valider Définitivement
-                </button>
-              </div>
-            )}
-          </div>
-        )}
-
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
-    </div>
+    </motion.div>
   );
 }

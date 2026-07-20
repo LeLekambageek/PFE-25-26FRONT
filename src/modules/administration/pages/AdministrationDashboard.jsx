@@ -2,7 +2,22 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { administrationApi } from "../../../shared/api/administrationApi";
 import apiClient from "../../../shared/api/apiClient";
-import NotificationBell from "../../../shared/components/NotificationBell";
+import { motion } from "framer-motion";
+import {
+  Briefcase,
+  Calendar,
+  Award,
+  Clock,
+  TrendingUp,
+  BarChart3,
+  FileSpreadsheet,
+  Layers,
+  Settings,
+  Download,
+  AlertCircle,
+  Users,
+  ChevronRight
+} from "lucide-react";
 
 export default function AdministrationDashboard() {
   const navigate = useNavigate();
@@ -60,162 +75,226 @@ export default function AdministrationDashboard() {
   const statsMentions = graphiques?.mentions_soutenances || [];
   const maxMentionVal = statsMentions.length > 0 ? Math.max(...statsMentions.map((m) => m.value)) : 1;
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: { staggerChildren: 0.05 }
+    }
+  };
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 25 } }
+  };
+
   return (
-    <div className="page">
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
+      className="space-y-8 w-full"
+    >
+      {/* Title block */}
+      <div className="flex flex-col text-left">
+        <h1 className="text-2xl font-bold text-[#1C0A10] tracking-tight">Tableau de bord Administration</h1>
+        <p className="text-sm text-gray-500 mt-1">
+          Vue d'ensemble de l'établissement, répartition des soutenances, taux d'encadrement et indicateurs de performance.
+        </p>
+      </div>
+
       {error && (
-        <div className="card" style={{ borderColor: "var(--danger)", background: "var(--danger-bg)", color: "var(--danger)", padding: 16 }}>
-          {error}
+        <div className="card border border-red-500/30 bg-red-500/10 text-red-600 p-4 rounded-xl flex items-center gap-2">
+          <AlertCircle size={16} />
+          <span>{error}</span>
         </div>
       )}
 
       {/* KPI Counters Row */}
-      <div className="stats-row stats-row-4">
-        <div className="stat-card">
-          <p className="label">Total Mémoires</p>
-          <p className="value">{totalEtudiants}</p>
+      <motion.div variants={cardVariants} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
+        <div className="stat-card flex items-center justify-between">
+          <div>
+            <p className="label">Total Mémoires</p>
+            <p className="value">{totalEtudiants}</p>
+          </div>
+          <div className="p-3 bg-red-500/10 rounded-2xl text-[#FF0000]">
+            <Layers size={24} />
+          </div>
         </div>
-        <div className="stat-card">
-          <p className="label">Soutenances Planifiées</p>
-          <p className="value success">{totalPlanifiees}</p>
+
+        <div className="stat-card flex items-center justify-between">
+          <div>
+            <p className="label">Soutenances Planifiées</p>
+            <p className="value text-emerald-600">{totalPlanifiees}</p>
+          </div>
+          <div className="p-3 bg-emerald-500/10 rounded-2xl text-emerald-600">
+            <Calendar size={24} />
+          </div>
         </div>
-        <div className="stat-card">
-          <p className="label">Soutenances Terminées</p>
-          <p className="value success">{totalSoutenues}</p>
+
+        <div className="stat-card flex items-center justify-between">
+          <div>
+            <p className="label">Soutenances Terminées</p>
+            <p className="value text-emerald-600">{totalSoutenues}</p>
+          </div>
+          <div className="p-3 bg-emerald-500/10 rounded-2xl text-emerald-600">
+            <Award size={24} />
+          </div>
         </div>
-        <div className="stat-card">
-          <p className="label">Délai Moyen Soutenance</p>
-          <p className="value warning">{delaiMoyen}</p>
+
+        <div className="stat-card flex items-center justify-between">
+          <div>
+            <p className="label">Délai Moyen</p>
+            <p className="value text-amber-600">{delaiMoyen}</p>
+          </div>
+          <div className="p-3 bg-amber-500/10 rounded-2xl text-amber-600">
+            <Clock size={24} />
+          </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Dashboard Charts & Stats */}
-      <div className="grid gap-5 lg:grid-cols-2 mb-6">
-        <div className="card">
-          <div className="card-header">
-            <div>
-              <p className="card-title">Répartition des Mémoires par Statut</p>
-            </div>
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 w-full">
+        {/* Statut mémoires chart */}
+        <motion.div variants={cardVariants} className="card p-8 shadow-xl">
+          <div className="flex items-center gap-2.5 mb-6 pb-4 border-b border-[#E8D6DA]">
+            <BarChart3 size={20} className="text-[#FF0000]" />
+            <h2 className="text-lg font-bold text-[#1C0A10]">Répartition des Mémoires par Statut</h2>
           </div>
-          <div className="progress-row">
+
+          <div className="space-y-5">
             {statsStatut.length === 0 ? (
               <p className="empty-state">Aucune statistique disponible.</p>
             ) : (
               statsStatut.map((s) => {
                 const percentage = Math.round((s.value / maxStatutVal) * 100);
                 return (
-                  <div key={s.label} className="progress-item">
-                    <div className="progress-label">
-                      <span>{s.label.replace(/_/g, " ")}</span>
+                  <div key={s.label} className="space-y-2">
+                    <div className="flex justify-between text-sm font-semibold text-gray-700">
+                      <span className="capitalize">{s.label.replace(/_/g, " ")}</span>
                       <span>{s.value} mémoire(s)</span>
                     </div>
-                    <div className="progress-track">
-                      <div className="progress-fill" style={{ width: `${percentage}%` }} />
+                    <div className="w-full bg-[#F4E7EB] h-2.5 rounded-full overflow-hidden">
+                      <div 
+                        className="bg-gradient-to-r from-[#FF0000] to-[#D50048] h-full transition-all duration-500" 
+                        style={{ width: `${percentage}%` }} 
+                      />
                     </div>
                   </div>
                 );
               })
             )}
           </div>
-        </div>
+        </motion.div>
 
-        <div className="card">
-          <div className="card-header">
-            <div>
-              <p className="card-title">Mentions des Soutenances Délibérées</p>
-            </div>
+        {/* Mentions chart */}
+        <motion.div variants={cardVariants} className="card p-8 shadow-xl">
+          <div className="flex items-center gap-2.5 mb-6 pb-4 border-b border-[#E8D6DA]">
+            <TrendingUp size={20} className="text-[#FF0000]" />
+            <h2 className="text-lg font-bold text-[#1C0A10]">Mentions des Soutenances Délibérées</h2>
           </div>
-          <div className="progress-row">
+
+          <div className="space-y-5">
             {statsMentions.length === 0 ? (
               <p className="empty-state">Aucun résultat publié pour le moment.</p>
             ) : (
               statsMentions.map((m) => {
                 const percentage = Math.round((m.value / maxMentionVal) * 100);
                 return (
-                  <div key={m.label} className="progress-item">
-                    <div className="progress-label">
+                  <div key={m.label} className="space-y-2">
+                    <div className="flex justify-between text-sm font-semibold text-gray-700">
                       <span>{m.label}</span>
                       <span>{m.value} étudiant(s)</span>
                     </div>
-                    <div className="progress-track">
-                      <div className="progress-fill" style={{ width: `${percentage}%` }} />
+                    <div className="w-full bg-[#F4E7EB] h-2.5 rounded-full overflow-hidden">
+                      <div 
+                        className="bg-gradient-to-r from-emerald-500 to-teal-500 h-full transition-all duration-500" 
+                        style={{ width: `${percentage}%` }} 
+                      />
                     </div>
                   </div>
                 );
               })
             )}
           </div>
-        </div>
+        </motion.div>
       </div>
 
-      <div className="card">
-        <div className="card-header">
-          <div>
-            <p className="card-title">Taux d'Encadrement des Enseignants</p>
-          </div>
+      {/* Teachers ratio */}
+      <motion.div variants={cardVariants} className="card p-8 shadow-xl w-full">
+        <div className="flex items-center gap-2.5 mb-6 pb-4 border-b border-[#E8D6DA]">
+          <Users size={20} className="text-[#FF0000]" />
+          <h2 className="text-lg font-bold text-[#1C0A10]">Taux d'Encadrement des Enseignants</h2>
         </div>
-        <div className="table-wrap">
-          {tauxEncadrement.length === 0 ? (
-            <p className="empty-state">Aucune affectation de mémoire en cours.</p>
-          ) : (
-            <table className="data-table">
+
+        {tauxEncadrement.length === 0 ? (
+          <p className="empty-state">Aucune affectation de mémoire en cours.</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-sm">
               <thead>
-                <tr>
-                  <th>Enseignant</th>
-                  <th className="text-right">Étudiants Encadrés</th>
+                <tr className="border-b border-[#E8D6DA] text-left text-gray-400 text-xs uppercase tracking-wider">
+                  <th className="pb-3 font-semibold">Enseignant</th>
+                  <th className="pb-3 font-semibold text-right">Étudiants Encadrés</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-[#E8D6DA]">
                 {tauxEncadrement.map((item) => (
-                  <tr key={item.encadreur_id || item.encadreur}>
-                    <td>{item.encadreur}</td>
-                    <td className="text-right" style={{ fontWeight: 700 }}>
-                      {item.nombre_memoires} / 20
-                    </td>
+                  <tr key={item.encadreur_id || item.encadreur} className="hover:bg-white/40 transition-colors">
+                    <td className="py-4 font-bold text-gray-800">{item.encadreur}</td>
+                    <td className="py-4 text-right font-extrabold text-[#1C0A10]">{item.nombre_memoires} / 20</td>
                   </tr>
                 ))}
               </tbody>
             </table>
-          )}
-        </div>
-      </div>
+          </div>
+        )}
+      </motion.div>
 
       {/* Reports Export Section */}
-      <div className="card" style={{ marginBottom: 24 }}>
-        <h2>Exportation des Rapports Académiques</h2>
-        <p className="dossier-meta" style={{ marginBottom: 16 }}>
-          Téléchargez les rapports complets de l'établissement sous différents formats.
+      <motion.div variants={cardVariants} className="card p-8 shadow-xl w-full">
+        <div className="flex items-center gap-2.5 mb-4">
+          <FileSpreadsheet size={22} className="text-[#FF0000]" />
+          <h2 className="text-lg font-bold text-[#1C0A10]">Exportation des Rapports Académiques</h2>
+        </div>
+        <p className="text-sm text-gray-500 mb-6">
+          Téléchargez les rapports complets d'évaluation, les statistiques de soutenances et l'annuaire des stages de l'établissement.
         </p>
-        <div className="actions-row">
-          <a href={getExportUrl("pdf")} className="btn btn-primary" target="_blank" rel="noopener noreferrer">
-            Exporter en PDF 📄
+        <div className="flex flex-wrap gap-4">
+          <a href={getExportUrl("pdf")} className="btn btn-primary px-6 py-3 text-sm font-semibold flex items-center gap-2" target="_blank" rel="noopener noreferrer">
+            <Download size={16} /> Exporter en PDF
           </a>
-          <a href={getExportUrl("csv")} className="btn" target="_blank" rel="noopener noreferrer">
-            Exporter en CSV 📊
+          <a href={getExportUrl("csv")} className="btn px-6 py-3 text-sm font-semibold flex items-center gap-2" target="_blank" rel="noopener noreferrer">
+            <Download size={16} /> Exporter en CSV
           </a>
-          <a href={getExportUrl("excel")} className="btn" target="_blank" rel="noopener noreferrer">
-            Exporter en Excel 📈
+          <a href={getExportUrl("excel")} className="btn px-6 py-3 text-sm font-semibold flex items-center gap-2" target="_blank" rel="noopener noreferrer">
+            <Download size={16} /> Exporter en Excel
           </a>
         </div>
-      </div>
+      </motion.div>
 
       {/* Quick Action Center */}
-      <div className="card">
-        <h2>Centre de Pilotage Académique</h2>
-        <div className="actions-row" style={{ marginTop: 16 }}>
-          <button className="btn btn-primary" onClick={() => navigate("/administration/comptes")}>
-            Gérer les Comptes Utilisateurs
+      <motion.div variants={cardVariants} className="card p-8 shadow-xl w-full">
+        <div className="flex items-center gap-2.5 mb-6 pb-4 border-b border-[#E8D6DA]">
+          <Settings size={22} className="text-[#FF0000]" />
+          <h2 className="text-lg font-bold text-[#1C0A10]">Centre de Pilotage Académique</h2>
+        </div>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <button className="btn btn-primary py-3.5 text-xs font-semibold flex items-center justify-between" onClick={() => navigate("/administration/comptes")}>
+            Gérer les Comptes Utilisateurs <ChevronRight size={14} />
           </button>
-          <button className="btn btn-primary" onClick={() => navigate("/administration/affectations")}>
-            Affecter Stages & Encadreurs
+          <button className="btn btn-primary py-3.5 text-xs font-semibold flex items-center justify-between" onClick={() => navigate("/administration/affectations")}>
+            Affecter Stages & Encadreurs <ChevronRight size={14} />
           </button>
-          <button className="btn" onClick={() => navigate("/soutenances")}>
-            Créneaux & Planification
+          <button className="btn py-3.5 text-xs font-semibold flex items-center justify-between" onClick={() => navigate("/soutenances")}>
+            Créneaux & Planification <ChevronRight size={14} />
           </button>
-          <button className="btn" onClick={() => navigate("/entreprises")}>
-            Gérer les Entreprises
+          <button className="btn py-3.5 text-xs font-semibold flex items-center justify-between" onClick={() => navigate("/entreprises")}>
+            Gérer les Entreprises <ChevronRight size={14} />
           </button>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
