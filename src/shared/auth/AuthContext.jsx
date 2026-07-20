@@ -1,11 +1,28 @@
-import { createContext, useContext, useState, useCallback } from "react";
+import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import apiClient from "../api/apiClient";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem("api_token");
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+
+    apiClient
+      .get("/me")
+      .then(({ data }) => setUser(data))
+      .catch(() => {
+        localStorage.removeItem("api_token");
+        setUser(null);
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
   const login = useCallback(async (email, password) => {
     setLoading(true);
