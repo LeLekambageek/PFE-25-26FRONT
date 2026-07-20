@@ -8,8 +8,7 @@ export function roleHomePath(user) {
   if (roles.includes("etudiant")) return "/etudiant";
   if (roles.includes("enseignant_encadreur")) return "/encadreur";
   if (roles.includes("jury_soutenance")) return "/jury";
-  if (roles.includes("responsable_relation_entreprise")) return "/entreprises";
-  if (roles.includes("admin_general") || roles.includes("responsable_formation")) return "/administration";
+  if (roles.includes("administration")) return "/administration";
 
   return "/stages";
 }

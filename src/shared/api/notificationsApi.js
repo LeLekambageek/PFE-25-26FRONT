@@ -1,11 +1,10 @@
 import apiClient from "./apiClient";
 
 export const notificationsApi = {
-  getNotifications: (params) => apiClient.get("/notifications", { params }),
-  getNotificationsNonLues: () => apiClient.get("/notifications/non-lues"),
-  getCountUnread: () => apiClient.get("/notifications/count"),
-  markAllAsRead: () => apiClient.post("/notifications/marquer-toutes-lues"),
-  getNotification: (notificationId) => apiClient.get(`/notifications/${notificationId}`),
-  markAsRead: (notificationId) => apiClient.post(`/notifications/${notificationId}/marquer-lue`),
-  deleteNotification: (notificationId) => apiClient.delete(`/notifications/${notificationId}`),
+  getNotifications: () => apiClient.get("/notifications"),
+  getUnreadCount: () => apiClient.get("/notifications/non-lues/count"),
+  getNotification: (id) => apiClient.get(`/notifications/${id}`),
+  markAsRead: (id) => apiClient.post(`/notifications/${id}/lu`),
+  markAllAsRead: () => apiClient.post("/notifications/tout-marquer-lu"),
+  deleteNotification: (id) => apiClient.delete(`/notifications/${id}`),
 };

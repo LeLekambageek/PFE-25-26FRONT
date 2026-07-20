@@ -51,7 +51,7 @@ export default function EntreprisesListPage() {
     }
   };
 
-  const peutAjouter = hasRole("admin_general") || hasRole("responsable_relation_entreprise");
+  const peutAjouter = hasRole("administration");
   const peutModifier = peutAjouter;
   const peutSupprimer = peutAjouter;
 

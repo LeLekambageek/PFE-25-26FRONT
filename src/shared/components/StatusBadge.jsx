@@ -10,6 +10,7 @@ const LABELS = {
   terminee: "Terminée",
   planifiee: "Planifiée",
   brouillon: "Brouillon",
+  soutenu: "Terminé",
 };
 
 export default function StatusBadge({ statut }) {

@@ -9,9 +9,10 @@ import EncadrementsListPage from "./modules/encadrements/pages/EncadrementsListP
 import MemoiresListPage from "./modules/memoires/pages/MemoiresListPage";
 import SoutenancesListPage from "./modules/soutenances/pages/SoutenancesListPage";
 import EntreprisesListPage from "./modules/entreprises/pages/EntreprisesListPage";
+import BibliothequeListPage from "./modules/bibliotheque/pages/BibliothequeListPage";
 import EtudiantDashboard from "./modules/etudiant/pages/EtudiantDashboard";
 import EncadreurDashboard from "./modules/encadreur/pages/EncadreurDashboard";
-import AdministrationDashboard from "./modules/administration/pages/AdministrationDashboard";
+import { AdministrationDashboard, ComptesListPage, AffectationsPage } from "./modules/administration/pages";
 import JuryDashboard from "./modules/jury/pages/JuryDashboard";
 import { roleHomePath } from "./shared/roleHomePath";
 
@@ -57,8 +58,24 @@ export default function App() {
             <Route
               path="/administration"
               element={
-                <ProtectedRoute allowedRoles={["admin_general", "responsable_formation"]}>
+                <ProtectedRoute allowedRoles={["administration"]}>
                   <AdministrationDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/administration/comptes"
+              element={
+                <ProtectedRoute allowedRoles={["administration"]}>
+                  <ComptesListPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/administration/affectations"
+              element={
+                <ProtectedRoute allowedRoles={["administration"]}>
+                  <AffectationsPage />
                 </ProtectedRoute>
               }
             />
@@ -71,11 +88,13 @@ export default function App() {
               }
             />
 
+
             <Route path="/stages" element={<StagesListPage />} />
             <Route path="/encadrements" element={<EncadrementsListPage />} />
             <Route path="/memoires" element={<MemoiresListPage />} />
             <Route path="/soutenances" element={<SoutenancesListPage />} />
             <Route path="/entreprises" element={<EntreprisesListPage />} />
+            <Route path="/bibliotheque" element={<BibliothequeListPage />} />
           </Route>
 
           <Route path="/" element={<RootRedirect />} />

@@ -9,6 +9,7 @@ export default function EtudiantDashboard() {
   const [memoires, setMemoires] = useState([]);
   const [candidatures, setCandidatures] = useState([]);
   const [creneauxDisponibles, setCreneauxDisponibles] = useState([]);
+  const [resultats, setResultats] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -17,21 +18,33 @@ export default function EtudiantDashboard() {
 
   const fetchData = async () => {
     try {
-      const [stageRes, memoiresRes, candidaturesRes, creneauxRes] = await Promise.all([
+      const [stageRes, memoiresRes, candidaturesRes, creneauxRes, resultatsRes] = await Promise.all([
         etudiantApi.getMonStageActif().catch(() => ({ data: null })),
         etudiantApi.getMesMemoires(),
         etudiantApi.getMesCandidatures(),
         creneauxApi.getCreneauxDisponiblesPourMoi().catch(() => ({ data: [] })),
+        etudiantApi.getResultatsSoutenance().catch(() => ({ data: null })),
       ]);
 
       setStageActif(stageRes.data);
       setMemoires(memoiresRes.data);
       setCandidatures(candidaturesRes.data);
       setCreneauxDisponibles(creneauxRes.data);
+      setResultats(resultatsRes.data);
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleReserverCreneau = async (creneauId) => {
+    try {
+      await etudiantApi.demanderCreneauSoutenance(creneauId);
+      alert("Votre demande de réservation a été envoyée avec succès à l'administration.");
+      fetchData();
+    } catch (err) {
+      alert("Impossible de réserver : " + (err.response?.data?.message || "erreur"));
     }
   };
 
@@ -46,6 +59,57 @@ export default function EtudiantDashboard() {
         </div>
         <NotificationBell />
       </div>
+
+      {/* Results Section (Mes Résultats) - Renders only when published */}
+      {resultats && (
+        <div className="card" style={{ borderColor: "var(--success)", background: "var(--success-bg)", padding: 28, marginBottom: 24 }}>
+          <h2>🎓 Mes Résultats de Soutenance</h2>
+          <p className="dossier-meta" style={{ marginBottom: 16 }}>
+            Félicitations, vos résultats officiels ont été délibérés et publiés par l'administration.
+          </p>
+
+          <div style={{ display: "flex", gap: 30, flexWrap: "wrap", alignItems: "center" }}>
+            <div style={{ textAlign: "center", background: "var(--surface)", border: "2px solid var(--success)", padding: "16px 28px", borderRadius: 12, minWidth: 160 }}>
+              <span style={{ fontSize: 11, color: "var(--ink-soft)", fontWeight: "bold", textTransform: "uppercase" }}>Note Finale</span>
+              <p style={{ fontSize: 36, fontWeight: 800, color: "var(--navy)", margin: "4px 0" }}>
+                {parseFloat(resultats.note_finale).toFixed(2)} <span style={{ fontSize: 16, fontWeight: 400, color: "var(--ink-soft)" }}>/ 20</span>
+              </p>
+              <span className="badge badge-valide" style={{ fontSize: 11 }}>Mention : {resultats.mention || "N/A"}</span>
+            </div>
+
+            <div style={{ flex: 1, minWidth: 280 }}>
+              <p className="dossier-title" style={{ fontSize: 16 }}>Sujet évalué :</p>
+              <p style={{ fontSize: 14, fontStyle: "italic", color: "var(--ink)", margin: "4px 0 12px 0" }}>
+                "{resultats.memoire?.titre}"
+              </p>
+
+              <h4 style={{ fontSize: 13, color: "var(--navy)", marginBottom: 8 }}>Feuille de notes détaillée du Jury :</h4>
+              <div style={{ maxHeight: 200, overflowY: "auto" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12.5 }}>
+                  <thead>
+                    <tr style={{ borderBottom: "1px solid var(--border)", textAlign: "left" }}>
+                      <th style={{ padding: "6px 0" }}>Critère d'évaluation</th>
+                      <th style={{ padding: "6px 0", textAlign: "right" }}>Note</th>
+                      <th style={{ padding: "6px 12px" }}>Observations</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {resultats.notes && resultats.notes.map((n) => (
+                      <tr key={n.id} style={{ borderBottom: "1px dashed var(--border)" }}>
+                        <td style={{ padding: "8px 0", fontWeight: "bold" }}>{n.critere}</td>
+                        <td style={{ padding: "8px 0", textAlign: "right", color: "var(--success)", fontWeight: "bold" }}>{n.note} / 20</td>
+                        <td style={{ padding: "8px 12px", fontStyle: "italic", color: "var(--ink-soft)" }}>
+                          {n.commentaire || "(Aucune observation)"}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="stats-row stats-row-4">
         <div className="stat-card">
@@ -150,7 +214,12 @@ export default function EtudiantDashboard() {
                     <p className="dossier-sub">Salle : {creneau.salle}</p>
                   </div>
                 </div>
-                <button className="btn btn-primary">Réserver</button>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => handleReserverCreneau(creneau.id)}
+                >
+                  Réserver
+                </button>
               </div>
             ))
           )}

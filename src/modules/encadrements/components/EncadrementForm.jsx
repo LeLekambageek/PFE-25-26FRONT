@@ -51,7 +51,7 @@ export default function EncadrementForm({ onEncadrementCreated }) {
         <select value={etudiantId} onChange={(e) => setEtudiantId(e.target.value)} required>
           <option value="">-- Choisir --</option>
           {etudiants.map((e) => (
-            <option key={e.id} value={e.id}>{e.nom} ({e.matricule})</option>
+            <option key={e.etudiant_id} value={e.etudiant_id}>{e.nom} ({e.matricule})</option>
           ))}
         </select>
       </div>
@@ -61,7 +61,7 @@ export default function EncadrementForm({ onEncadrementCreated }) {
         <select value={enseignantId} onChange={(e) => setEnseignantId(e.target.value)} required>
           <option value="">-- Choisir --</option>
           {enseignants.map((e) => (
-            <option key={e.id} value={e.id}>{e.nom} ({e.specialite})</option>
+            <option key={e.enseignant_id} value={e.enseignant_id}>{e.nom} ({e.specialite})</option>
           ))}
         </select>
       </div>

@@ -2,24 +2,24 @@ import apiClient from "./apiClient";
 
 export const etudiantApi = {
   // Stages
-  getMesStages: () => apiClient.get("/etudiant/mes-stages"),
-  getMonStageActif: () => apiClient.get("/etudiant/mon-stage-actif"),
-  
-  // Mémoires
-  getMesMemoires: () => apiClient.get("/etudiant/mes-memoires"),
-  proposerSujetMemoire: (data) => apiClient.post("/etudiant/proposer-sujet-memoire", data),
-  
+  getMesStages: () => apiClient.get("/mon-espace/stages"),
+  getMonStageActif: () => apiClient.get("/mon-espace/stage-actif"),
+
+  // Memoires
+  getMesMemoires: () => apiClient.get("/mon-espace/memoires"),
+  proposerSujetMemoire: (data) => apiClient.post("/memoires", data),
+
   // Encadrements
-  getMesEncadrements: () => apiClient.get("/etudiant/mes-encadrements"),
-  
+  getMesEncadrements: () => apiClient.get("/mon-espace/encadrements"),
+
   // Candidatures
-  getMesCandidatures: () => apiClient.get("/etudiant/mes-candidatures"),
-  
+  getMesCandidatures: () => apiClient.get("/mon-espace/candidatures"),
+
   // Rapports
-  getMesRapports: () => apiClient.get("/etudiant/mes-rapports"),
-  
+  getMesRapports: () => apiClient.get("/mon-espace/rapports"),
+
   // Soutenance
-  demanderCreneauSoutenance: (data) => apiClient.post("/etudiant/demander-creneau-soutenance", data),
-  getInformationsSoutenance: () => apiClient.get("/etudiant/informations-soutenance"),
-  getResultatsSoutenance: () => apiClient.get("/etudiant/resultats-soutenance"),
+  demanderCreneauSoutenance: (creneauId) => apiClient.post(`/creneaux-soutenance/${creneauId}/reserver`),
+  getInformationsSoutenance: () => apiClient.get("/mon-espace/soutenance"),
+  getResultatsSoutenance: () => apiClient.get("/mon-espace/resultats-soutenance"),
 };

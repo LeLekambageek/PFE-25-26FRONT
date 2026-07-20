@@ -92,8 +92,8 @@ export default function EncadrementsListPage() {
     }
   };
 
-  const peutCreer = user?.roles?.some((r) => r.name === "responsable_formation");
-  const peutModifier = user?.roles?.some((r) => r.name === "responsable_formation");
+  const peutCreer = user?.roles?.some((r) => r.name === "administration");
+  const peutModifier = user?.roles?.some((r) => r.name === "administration");
   const peutAjouterEntree = user?.roles?.some(
     (r) => r.name === "etudiant" || r.name === "enseignant_encadreur"
   );
@@ -125,7 +125,7 @@ export default function EncadrementsListPage() {
               <select value={selectedEnseignant} onChange={(e) => setSelectedEnseignant(e.target.value)}>
                 <option value="">-- Choisir un enseignant --</option>
                 {enseignants.map((ens) => (
-                  <option key={ens.id} value={ens.id}>
+                  <option key={ens.enseignant_id} value={ens.enseignant_id}>
                     {ens.nom} ({ens.specialite})
                   </option>
                 ))}
