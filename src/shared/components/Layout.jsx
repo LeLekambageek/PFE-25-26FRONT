@@ -2,27 +2,10 @@ import { useEffect, useState } from "react";
 import { NavLink, useNavigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  LayoutDashboard,
-  Users,
-  GitPullRequest,
-  Briefcase,
-  GraduationCap,
-  BookOpen,
-  Presentation,
-  Library,
-  Building2,
-  ChevronLeft,
-  ChevronRight,
-  Search,
-  Plus,
-  Sparkles,
-  CalendarDays,
-  Menu,
-  Command
-} from "lucide-react";
+import { LayoutDashboard, Users, GitPullRequest, Briefcase, GraduationCap, BookOpen, Presentation, Library, Building2, ChevronLeft, ChevronRight, Search, Plus, Sparkles, CalendarDays, Menu, Command } from "lucide-react";
 import NotificationBell from "./NotificationBell";
-import logoImg from "../../assets/logo header.png";
+import logoImg from "../../assets/EPFBLACK.png";
+//import logoImg from "C:/Users/lheri/OneDrive/Bureau/PFE_Sayba_MOI/PFE_FRONT/src/assets/EPFBLACK.png";
 
 const NAV_ITEMS = [
   { to: "/etudiant", label: "Tableau de bord", roles: ["etudiant"], icon: LayoutDashboard },
@@ -118,22 +101,20 @@ export default function Layout() {
       <motion.aside
         animate={{ width: isMobile ? 280 : isCollapsed ? 88 : 320 }}
         transition={{ type: "spring", stiffness: 280, damping: 28 }}
-        className={`sidebar flex-shrink-0 flex flex-col bg-gradient-to-b from-[#0B0B12] via-[#0A0A0F] to-[#111827] shadow-[0_30px_90px_rgba(0,0,0,0.35)] border-r border-white/10 overflow-hidden ${
-          isMobile
-            ? `fixed inset-y-0 left-0 z-50 transition-transform duration-300 ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}`
-            : "relative"
-        }`}
+        className={`sidebar flex-shrink-0 flex flex-col bg-gradient-to-b from-[#0B0B12] via-[#0A0A0F] to-[#111827] shadow-[0_30px_90px_rgba(0,0,0,0.35)] border-r border-white/10 overflow-hidden ${isMobile
+          ? `fixed inset-y-0 left-0 z-50 transition-transform duration-300 ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}`
+          : "relative"
+          }`}
       >
         <div className="flex flex-col h-full">
           <div className="sidebar-brand flex items-start justify-between px-6 py-5">
             <div className="flex items-center gap-3">
               <div className="sidebar-logo flex h-14 w-14 items-center justify-center rounded-3xl bg-transparent border-0 overflow-hidden">
-                <img src={logoImg} alt="Logo EPF" className="h-10 w-10 object-contain" />
+                <img src={logoImg} alt="Logo EPF" className="w-full h-full object-contain" />
               </div>
               {!effectiveCollapsed && (
                 <div className="text-white leading-tight pt-1">
                   <p className="text-base font-semibold tracking-[0.12em] uppercase">EPF Africa</p>
-                  <p className="text-[11px] text-white/70 uppercase tracking-[0.2em] mt-1">SaaS Académique</p>
                 </div>
               )}
             </div>
@@ -173,8 +154,7 @@ export default function Layout() {
                     key={item.to}
                     to={item.to}
                     className={({ isActive }) =>
-                      `nav-link relative flex items-center gap-4 rounded-3xl px-4 py-4 text-sm font-semibold transition-all duration-200 ${
-                        isActive ? "active text-white" : "text-white/80 hover:text-white"
+                      `nav-link relative flex items-center gap-4 rounded-3xl px-4 py-4 text-sm font-semibold transition-all duration-200 ${isActive ? "active text-white" : "text-white/80 hover:text-white"
                       }`
                     }
                   >
@@ -208,8 +188,8 @@ export default function Layout() {
                   {initiales}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-white truncate">{user?.name}</p>
-                  <p className="text-[11px] uppercase tracking-[0.24em] text-white/60 mt-1">Accès premium</p>
+                  <p className="text-base font-semibold tracking-[0.12em] uppercase">{user?.name}</p>
+                  <p className="text-[11px] uppercase tracking-[0.24em] text-white/90 mt-1">Mon espace utilisateur</p>
                 </div>
               </div>
               {!effectiveCollapsed && (
