@@ -22,6 +22,7 @@ import {
   Command
 } from "lucide-react";
 import NotificationBell from "./NotificationBell";
+import logoImg from "../../assets/logo header.png";
 
 const NAV_ITEMS = [
   { to: "/etudiant", label: "Tableau de bord", roles: ["etudiant"], icon: LayoutDashboard },
@@ -125,9 +126,9 @@ export default function Layout() {
       >
         <div className="flex flex-col h-full">
           <div className="sidebar-brand flex items-start justify-between px-6 py-5">
-            <div className="flex items-start gap-3">
-              <div className="sidebar-logo flex h-14 w-14 items-center justify-center rounded-3xl bg-[#1B1B22] border border-white/20 text-xl font-black text-white shadow-[0_15px_60px_rgba(255,0,0,0.18)]">
-                EP
+            <div className="flex items-center gap-3">
+              <div className="sidebar-logo flex h-14 w-14 items-center justify-center rounded-3xl bg-transparent border-0 overflow-hidden">
+                <img src={logoImg} alt="Logo EPF" className="h-10 w-10 object-contain" />
               </div>
               {!effectiveCollapsed && (
                 <div className="text-white leading-tight pt-1">

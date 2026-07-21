@@ -53,6 +53,7 @@ export default function SoutenancesListPage() {
         setCreneaux(res.data.data || res.data || []);
       }
     } catch (err) {
+      console.error("Erreur de chargement des données de soutenance:", err);
       setError("Erreur lors du chargement des informations.");
     } finally {
       setLoading(false);
@@ -275,7 +276,7 @@ export default function SoutenancesListPage() {
                       <button className="btn btn-ghost" onClick={() => handleEnvoyerConvocations(s.id)}>
                         Envoyer les Convocations
                       </button>
-                      {s.statut !== "terminee" && s.statut !== "annulee" && (
+                      {!s.resultats_publies && s.statut !== "annulee" && (
                         <button className="btn btn-primary" onClick={() => handlePublierResultats(s.id)}>
                           Publier les Résultats
                         </button>

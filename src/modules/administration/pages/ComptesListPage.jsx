@@ -205,7 +205,7 @@ export default function ComptesListPage() {
                     onClick={() => handleReinitialiserPassword(userId)}
                     title="Changer le mot de passe et notifier l'utilisateur"
                   >
-                    RàZ Identifiants
+                    Réinitialiser
                   </button>
                   <button
                     className="btn btn-danger"

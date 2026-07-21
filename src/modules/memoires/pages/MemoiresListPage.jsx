@@ -18,6 +18,7 @@ export default function MemoiresListPage() {
   // Espace Suivi state
   const [selectedMemoire, setSelectedMemoire] = useState(null);
   const [versions, setVersions] = useState([]);
+  const [newComments, setNewComments] = useState({});
   const [versionsLoading, setVersionsLoading] = useState(false);
   const [selectedVersion, setSelectedVersion] = useState(null);
 
@@ -150,6 +151,36 @@ export default function MemoiresListPage() {
       link.remove();
     } catch (err) {
       alert("Erreur lors du téléchargement du document.");
+    }
+  };
+
+  const handlePostComment = async (versionId) => {
+    const text = newComments[versionId];
+    if (!text || !text.trim()) return;
+
+    try {
+      const { data } = await apiClient.post(`/versions/${versionId}/corrections`, {
+        commentaire: text,
+        type_correction: "reponse",
+      });
+
+      // Update the local state of the versions to append the new correction
+      setVersions((prev) =>
+        prev.map((v) => {
+          if (v.id === versionId) {
+            return {
+              ...v,
+              corrections: [...(v.corrections || []), data],
+            };
+          }
+          return v;
+        })
+      );
+
+      // Reset the comment field
+      setNewComments((prev) => ({ ...prev, [versionId]: "" }));
+    } catch (err) {
+      alert("Erreur lors de l'envoi du commentaire : " + (err.response?.data?.message || "erreur"));
     }
   };
 
@@ -453,11 +484,51 @@ export default function MemoiresListPage() {
                         </div>
 
                         {/* Annotations / feedback history if existing */}
-                        {(v.commentaires_encadreur || v.recommandations || v.annotations) && (
+                        {(v.commentaires_encadreur || v.recommandations || v.annotations || (v.corrections && v.corrections.length > 0)) && (
                           <div style={{ marginTop: 8, borderTop: "1px dashed var(--border)", paddingTop: 6, fontSize: 11, color: "var(--ink-soft)" }}>
                             {v.annotations && <p style={{ margin: "2px 0" }}><strong>Annotations :</strong> "{v.annotations}"</p>}
                             {v.commentaires_encadreur && <p style={{ margin: "2px 0" }}><strong>Remarques :</strong> "{v.commentaires_encadreur}"</p>}
                             {v.recommandations && <p style={{ margin: "2px 0" }}><strong>Conseils :</strong> "{v.recommandations}"</p>}
+                            {v.corrections && v.corrections.length > 0 && (
+                              <div style={{ marginTop: 6, borderTop: "1px dashed var(--border)", paddingTop: 6 }}>
+                                <p style={{ fontWeight: "bold", fontSize: 11, color: "#EF4444", marginBottom: 4 }}>Demandes de corrections formelles :</p>
+                                <div style={{ display: "grid", gap: 6 }}>
+                                  {v.corrections.map((c) => (
+                                    <div key={c.id} style={{ padding: "6px 10px", background: "rgba(239, 68, 68, 0.05)", borderLeft: "2px solid #EF4444", borderRadius: "0 6px 6px 0" }}>
+                                      <p style={{ margin: 0, fontStyle: "italic", fontSize: 11 }}>"{c.commentaire}"</p>
+                                      <span style={{ fontSize: 9, opacity: 0.5, display: "block", marginTop: 2 }}>Par {c.auteur?.name || "Encadreur"}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                            {/* Comment reply section */}
+                            <div style={{ marginTop: 10, display: "flex", gap: 6 }}>
+                              <input
+                                type="text"
+                                value={newComments[v.id] || ""}
+                                onChange={(e) => setNewComments({ ...newComments, [v.id]: e.target.value })}
+                                placeholder="Répondre ou commenter..."
+                                style={{
+                                  flex: 1,
+                                  minHeight: 32,
+                                  fontSize: 11,
+                                  padding: "4px 8px",
+                                  borderRadius: 6,
+                                  border: "1px solid var(--border)",
+                                  background: "rgba(255, 255, 255, 0.03)",
+                                  color: "var(--ink)",
+                                }}
+                              />
+                              <button
+                                type="button"
+                                className="btn btn-primary"
+                                style={{ minHeight: 32, padding: "4px 10px", fontSize: 11, borderRadius: 6 }}
+                                onClick={() => handlePostComment(v.id)}
+                              >
+                                Envoyer
+                              </button>
+                            </div>
                           </div>
                         )}
                       </div>

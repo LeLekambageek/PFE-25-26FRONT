@@ -97,8 +97,8 @@ export default function AdministrationDashboard() {
     >
       {/* Title block */}
       <div className="flex flex-col text-left">
-        <h1 className="text-2xl font-bold text-[#1C0A10] tracking-tight">Tableau de bord Administration</h1>
-        <p className="text-sm text-gray-500 mt-1">
+        <h1 className="text-2xl font-bold tracking-tight text-[var(--navy)]">Tableau de bord Administration</h1>
+        <p className="text-sm text-[var(--ink-soft)] mt-1">
           Vue d'ensemble de l'établissement, répartition des soutenances, taux d'encadrement et indicateurs de performance.
         </p>
       </div>
@@ -112,7 +112,7 @@ export default function AdministrationDashboard() {
 
       {/* KPI Counters Row */}
       <motion.div variants={cardVariants} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
-        <div className="stat-card flex items-center justify-between">
+        <div className="stat-card flex items-center justify-between" onClick={() => navigate("/memoires")}>
           <div>
             <p className="label">Total Mémoires</p>
             <p className="value">{totalEtudiants}</p>
@@ -122,32 +122,32 @@ export default function AdministrationDashboard() {
           </div>
         </div>
 
-        <div className="stat-card flex items-center justify-between">
+        <div className="stat-card flex items-center justify-between" onClick={() => navigate("/soutenances")}>
           <div>
             <p className="label">Soutenances Planifiées</p>
-            <p className="value text-emerald-600">{totalPlanifiees}</p>
+            <p className="value text-emerald-400">{totalPlanifiees}</p>
           </div>
-          <div className="p-3 bg-emerald-500/10 rounded-2xl text-emerald-600">
+          <div className="p-3 bg-emerald-500/10 rounded-2xl text-emerald-400">
             <Calendar size={24} />
           </div>
         </div>
 
-        <div className="stat-card flex items-center justify-between">
+        <div className="stat-card flex items-center justify-between" onClick={() => navigate("/soutenances")}>
           <div>
             <p className="label">Soutenances Terminées</p>
-            <p className="value text-emerald-600">{totalSoutenues}</p>
+            <p className="value text-emerald-400">{totalSoutenues}</p>
           </div>
-          <div className="p-3 bg-emerald-500/10 rounded-2xl text-emerald-600">
+          <div className="p-3 bg-emerald-500/10 rounded-2xl text-emerald-400">
             <Award size={24} />
           </div>
         </div>
 
-        <div className="stat-card flex items-center justify-between">
+        <div className="stat-card flex items-center justify-between" onClick={() => navigate("/soutenances")}>
           <div>
             <p className="label">Délai Moyen</p>
-            <p className="value text-amber-600">{delaiMoyen}</p>
+            <p className="value text-amber-400">{delaiMoyen}</p>
           </div>
-          <div className="p-3 bg-amber-500/10 rounded-2xl text-amber-600">
+          <div className="p-3 bg-amber-500/10 rounded-2xl text-amber-400">
             <Clock size={24} />
           </div>
         </div>
@@ -157,9 +157,9 @@ export default function AdministrationDashboard() {
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 w-full">
         {/* Statut mémoires chart */}
         <motion.div variants={cardVariants} className="card p-8 shadow-xl">
-          <div className="flex items-center gap-2.5 mb-6 pb-4 border-b border-[#E8D6DA]">
+          <div className="flex items-center gap-2.5 mb-6 pb-4 border-b border-[var(--border)]">
             <BarChart3 size={20} className="text-[#FF0000]" />
-            <h2 className="text-lg font-bold text-[#1C0A10]">Répartition des Mémoires par Statut</h2>
+            <h2 className="text-lg font-bold text-[var(--navy)]">Répartition des Mémoires par Statut</h2>
           </div>
 
           <div className="space-y-5">
@@ -170,11 +170,11 @@ export default function AdministrationDashboard() {
                 const percentage = Math.round((s.value / maxStatutVal) * 100);
                 return (
                   <div key={s.label} className="space-y-2">
-                    <div className="flex justify-between text-sm font-semibold text-gray-700">
+                    <div className="flex justify-between text-sm font-semibold text-[var(--ink)]">
                       <span className="capitalize">{s.label.replace(/_/g, " ")}</span>
                       <span>{s.value} mémoire(s)</span>
                     </div>
-                    <div className="w-full bg-[#F4E7EB] h-2.5 rounded-full overflow-hidden">
+                    <div className="w-full bg-white/10 h-2.5 rounded-full overflow-hidden">
                       <div 
                         className="bg-gradient-to-r from-[#FF0000] to-[#D50048] h-full transition-all duration-500" 
                         style={{ width: `${percentage}%` }} 
@@ -189,9 +189,9 @@ export default function AdministrationDashboard() {
 
         {/* Mentions chart */}
         <motion.div variants={cardVariants} className="card p-8 shadow-xl">
-          <div className="flex items-center gap-2.5 mb-6 pb-4 border-b border-[#E8D6DA]">
+          <div className="flex items-center gap-2.5 mb-6 pb-4 border-b border-[var(--border)]">
             <TrendingUp size={20} className="text-[#FF0000]" />
-            <h2 className="text-lg font-bold text-[#1C0A10]">Mentions des Soutenances Délibérées</h2>
+            <h2 className="text-lg font-bold text-[var(--navy)]">Mentions des Soutenances Délibérées</h2>
           </div>
 
           <div className="space-y-5">
@@ -202,11 +202,11 @@ export default function AdministrationDashboard() {
                 const percentage = Math.round((m.value / maxMentionVal) * 100);
                 return (
                   <div key={m.label} className="space-y-2">
-                    <div className="flex justify-between text-sm font-semibold text-gray-700">
+                    <div className="flex justify-between text-sm font-semibold text-[var(--ink)]">
                       <span>{m.label}</span>
                       <span>{m.value} étudiant(s)</span>
                     </div>
-                    <div className="w-full bg-[#F4E7EB] h-2.5 rounded-full overflow-hidden">
+                    <div className="w-full bg-white/10 h-2.5 rounded-full overflow-hidden">
                       <div 
                         className="bg-gradient-to-r from-emerald-500 to-teal-500 h-full transition-all duration-500" 
                         style={{ width: `${percentage}%` }} 
@@ -222,9 +222,9 @@ export default function AdministrationDashboard() {
 
       {/* Teachers ratio */}
       <motion.div variants={cardVariants} className="card p-8 shadow-xl w-full">
-        <div className="flex items-center gap-2.5 mb-6 pb-4 border-b border-[#E8D6DA]">
+        <div className="flex items-center gap-2.5 mb-6 pb-4 border-b border-[var(--border)]">
           <Users size={20} className="text-[#FF0000]" />
-          <h2 className="text-lg font-bold text-[#1C0A10]">Taux d'Encadrement des Enseignants</h2>
+          <h2 className="text-lg font-bold text-[var(--navy)]">Taux d'Encadrement des Enseignants</h2>
         </div>
 
         {tauxEncadrement.length === 0 ? (
@@ -233,16 +233,16 @@ export default function AdministrationDashboard() {
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-sm">
               <thead>
-                <tr className="border-b border-[#E8D6DA] text-left text-gray-400 text-xs uppercase tracking-wider">
+                <tr className="border-b border-[var(--border)] text-left text-[var(--ink-muted)] text-xs uppercase tracking-wider">
                   <th className="pb-3 font-semibold">Enseignant</th>
                   <th className="pb-3 font-semibold text-right">Étudiants Encadrés</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#E8D6DA]">
+              <tbody className="divide-y divide-[var(--border)]">
                 {tauxEncadrement.map((item) => (
-                  <tr key={item.encadreur_id || item.encadreur} className="hover:bg-white/40 transition-colors">
-                    <td className="py-4 font-bold text-gray-800">{item.encadreur}</td>
-                    <td className="py-4 text-right font-extrabold text-[#1C0A10]">{item.nombre_memoires} / 20</td>
+                  <tr key={item.encadreur_id || item.encadreur} className="hover:bg-white/10 transition-colors">
+                    <td className="py-4 font-bold text-[var(--ink)]">{item.encadreur}</td>
+                    <td className="py-4 text-right font-extrabold text-[var(--ink)]">{item.nombre_memoires} / 20</td>
                   </tr>
                 ))}
               </tbody>
@@ -255,9 +255,9 @@ export default function AdministrationDashboard() {
       <motion.div variants={cardVariants} className="card p-8 shadow-xl w-full">
         <div className="flex items-center gap-2.5 mb-4">
           <FileSpreadsheet size={22} className="text-[#FF0000]" />
-          <h2 className="text-lg font-bold text-[#1C0A10]">Exportation des Rapports Académiques</h2>
+          <h2 className="text-lg font-bold text-[var(--navy)]">Exportation des Rapports Académiques</h2>
         </div>
-        <p className="text-sm text-gray-500 mb-6">
+        <p className="text-sm text-[var(--ink-soft)] mb-6">
           Téléchargez les rapports complets d'évaluation, les statistiques de soutenances et l'annuaire des stages de l'établissement.
         </p>
         <div className="flex flex-wrap gap-4">
@@ -275,9 +275,9 @@ export default function AdministrationDashboard() {
 
       {/* Quick Action Center */}
       <motion.div variants={cardVariants} className="card p-8 shadow-xl w-full">
-        <div className="flex items-center gap-2.5 mb-6 pb-4 border-b border-[#E8D6DA]">
+        <div className="flex items-center gap-2.5 mb-6 pb-4 border-b border-[var(--border)]">
           <Settings size={22} className="text-[#FF0000]" />
-          <h2 className="text-lg font-bold text-[#1C0A10]">Centre de Pilotage Académique</h2>
+          <h2 className="text-lg font-bold text-[var(--navy)]">Centre de Pilotage Académique</h2>
         </div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

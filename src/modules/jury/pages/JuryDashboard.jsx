@@ -199,8 +199,8 @@ export default function JuryDashboard() {
     >
       {/* Title block */}
       <div className="flex flex-col text-left">
-        <h1 className="text-2xl font-bold text-[#1C0A10] tracking-tight">Tableau de bord Jury</h1>
-        <p className="text-sm text-gray-500 mt-1">
+        <h1 className="text-2xl font-bold tracking-tight text-[var(--navy)]">Tableau de bord Jury</h1>
+        <p className="text-sm text-[var(--ink-soft)] mt-1">
           Consultez les mémoires de fin d'études et attribuez vos évaluations pour les soutenances de votre session.
         </p>
       </div>
@@ -217,9 +217,9 @@ export default function JuryDashboard() {
         
         {/* Left Column: Assigned Defenses List */}
         <motion.div variants={cardVariants} className="card p-8 shadow-xl">
-          <div className="flex items-center gap-2.5 mb-6 pb-4 border-b border-[#E8D6DA]">
+          <div className="flex items-center gap-2.5 mb-6 pb-4 border-b border-[var(--border)]">
             <Calendar size={22} className="text-[#FF0000]" />
-            <h2 className="text-lg font-bold text-[#1C0A10]">Soutenances Assignées</h2>
+            <h2 className="text-lg font-bold text-[var(--navy)]">Soutenances Assignées</h2>
           </div>
 
           {loading && !selectedSoutenance && <div className="loading-state">Chargement...</div>}
@@ -236,15 +236,15 @@ export default function JuryDashboard() {
                 return (
                   <div 
                     key={s.id} 
-                    className={`dossier flex flex-col justify-between p-6 border border-[#E8D6DA] hover:border-[#FF0000]/20 transition-all rounded-xl gap-4 cursor-pointer bg-white ${
+                    className={`dossier flex flex-col justify-between p-6 border border-white/5 hover:border-[#FF0000]/20 transition-all rounded-xl gap-4 cursor-pointer bg-white/5 ${
                       estActive ? "ring-2 ring-[#FF0000] border-transparent" : "shadow-sm"
                     }`}
                     onClick={() => handleSelectSoutenance(s)}
                   >
-                    <div className="flex justify-between items-start gap-4 mb-2 pb-2 border-b border-[#E8D6DA] border-dashed">
+                    <div className="flex justify-between items-start gap-4 mb-2 pb-2 border-b border-white/5 border-dashed">
                       <div className="flex items-center gap-2">
-                        <GraduationCap size={18} className="text-gray-400" />
-                        <span className="text-sm font-bold text-gray-800">
+                        <GraduationCap size={18} className="text-[var(--ink-muted)]" />
+                        <span className="text-sm font-bold text-[var(--ink)]">
                           {s.memoire?.etudiant?.user?.name || s.memoire?.etudiant?.name || "Étudiant Inconnu"}
                         </span>
                       </div>
@@ -252,16 +252,16 @@ export default function JuryDashboard() {
                     </div>
 
                     <div className="space-y-3">
-                      <p className="text-sm text-gray-700 italic font-semibold leading-relaxed">
+                      <p className="text-sm text-[var(--ink-soft)] italic font-semibold leading-relaxed">
                         "{s.memoire?.titre}"
                       </p>
-                      <div className="flex items-center gap-2 text-xs text-gray-500 font-medium">
-                        <Clock size={14} className="text-gray-400" />
+                      <div className="flex items-center gap-2 text-xs text-[var(--ink-muted)] font-medium">
+                        <Clock size={14} className="text-[var(--ink-muted)]" />
                         <span>Le {new Date(s.date_soutenance).toLocaleDateString("fr-FR")} à {s.heure_debut} — Salle : {s.salle}</span>
                       </div>
                     </div>
 
-                    <div className="flex justify-between items-center pt-3 border-t border-[#E8D6DA] border-dashed">
+                    <div className="flex justify-between items-center pt-3 border-t border-white/5 border-dashed">
                       {estNotesValidees ? (
                         <span className="text-xs text-emerald-600 font-bold flex items-center gap-1">✓ Notes Validées</span>
                       ) : s.statut === "terminee" ? (
@@ -286,17 +286,17 @@ export default function JuryDashboard() {
           {selectedSoutenance && (
             <motion.div 
               variants={cardVariants}
-              className="card p-8 shadow-2xl xl:sticky xl:top-24 bg-[#FCF9FA] border border-[#E8D6DA] rounded-3xl"
+              className="card p-8 shadow-2xl xl:sticky xl:top-24"
             >
-              <div className="flex justify-between items-start gap-4 mb-6 pb-4 border-b border-[#E8D6DA]">
+              <div className="flex justify-between items-start gap-4 mb-6 pb-4 border-b border-[var(--border)]">
                 <div>
-                  <h2 className="text-lg font-bold text-[#1C0A10]">Workspace d'Évaluation</h2>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Candidat : <strong className="text-gray-700 font-semibold">{selectedSoutenance.memoire?.etudiant?.name}</strong>
+                  <h2 className="text-lg font-bold text-[var(--navy)]">Workspace d'Évaluation</h2>
+                  <p className="text-xs text-[var(--ink-soft)] mt-1">
+                    Candidat : <strong className="text-[var(--ink)] font-semibold">{selectedSoutenance.memoire?.etudiant?.name}</strong>
                   </p>
                 </div>
                 <button 
-                  className="p-1 text-gray-400 hover:text-[#FF0000] rounded-lg transition-colors cursor-pointer"
+                  className="p-1 text-[var(--ink-muted)] hover:text-[#FF0000] rounded-lg transition-colors cursor-pointer"
                   onClick={() => setSelectedSoutenance(null)}
                 >
                   <X size={20} />
@@ -304,10 +304,10 @@ export default function JuryDashboard() {
               </div>
 
               {/* Document download box */}
-              <div className="bg-[#F4E7EB] border border-[#E8D6DA] rounded-xl p-5 mb-6 space-y-3">
+              <div className="bg-[var(--surface-raised)] border border-[var(--border)] rounded-xl p-5 mb-6 space-y-3">
                 <div className="space-y-1">
-                  <span className="text-xs uppercase font-bold text-gray-500">Mémoire Déposé</span>
-                  <p className="text-xs text-gray-700 font-semibold italic">
+                  <span className="text-xs uppercase font-bold text-[var(--ink-muted)]">Mémoire Déposé</span>
+                  <p className="text-xs text-[var(--ink)] font-semibold italic">
                     "{selectedSoutenance.memoire?.titre}"
                   </p>
                 </div>
@@ -322,25 +322,25 @@ export default function JuryDashboard() {
               {/* Evaluation Form Grid */}
               <div className="space-y-6">
                 {CRITERES.map((c) => (
-                  <div key={c.key} className="space-y-3 pb-5 border-b border-[#E8D6DA] last:border-0 last:pb-0">
+                  <div key={c.key} className="space-y-3 pb-5 border-b border-[var(--border)] last:border-0 last:pb-0">
                     <div className="flex justify-between items-center">
-                      <label className="text-sm font-bold text-gray-700">{c.label}</label>
+                      <label className="text-sm font-bold text-[var(--ink)]">{c.label}</label>
                       <div className="flex items-center gap-2">
                         <input
                           type="number"
                           min="0"
                           max="20"
                           step="0.5"
-                          className="w-16 text-center border-2 border-[#E8D6DA] rounded-lg px-2 py-1 text-sm font-extrabold focus:border-red-500"
+                          className="w-16 text-center border-2 border-[var(--border)] bg-[var(--surface)] text-[var(--ink)] rounded-lg px-2 py-1 text-sm font-extrabold focus:border-red-500"
                           value={notes[c.key].note}
                           onChange={(e) => setNoteField(c.key, "note", e.target.value)}
                           disabled={estLectureSeule}
                           required
                         />
-                        <span className="text-xs text-gray-400 font-semibold">/ 20</span>
+                        <span className="text-xs text-[var(--ink-muted)] font-semibold">/ 20</span>
                       </div>
                     </div>
-                    <p className="text-xs text-gray-500 leading-normal">{c.desc}</p>
+                    <p className="text-xs text-[var(--ink-muted)] leading-normal">{c.desc}</p>
                     <input
                       type="text"
                       placeholder="Commentaires ou points forts/faibles..."
@@ -357,15 +357,15 @@ export default function JuryDashboard() {
               <div 
                 className={`mt-6 p-6 rounded-2xl border text-center space-y-1.5 ${
                   notesValidees 
-                    ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-700" 
+                    ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400" 
                     : estSoutenanceTerminee 
-                    ? "bg-[#F4E7EB] border-[#E8D6DA] text-gray-700" 
-                    : "bg-amber-500/10 border-amber-500/20 text-amber-700"
+                    ? "bg-white/5 border-white/10 text-[var(--ink)]" 
+                    : "bg-amber-500/10 border-amber-500/20 text-amber-400"
                 }`}
               >
                 <span className="text-xs uppercase font-bold tracking-wider">Moyenne Générale Estimée</span>
                 <div className="text-4xl font-extrabold my-2">
-                  {moyennePrint} <span className="text-lg font-normal text-gray-400">/ 20</span>
+                  {moyennePrint} <span className="text-lg font-normal text-[var(--ink-muted)]">/ 20</span>
                 </div>
                 
                 {notesValidees ? (
