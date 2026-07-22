@@ -77,8 +77,8 @@ export default function Layout() {
     subtitle: "Système de Gestion Académique"
   };
 
-  const currentTitleClass = "text-black";
-  const currentSubtitleClass = "text-black/70";
+  const currentTitleClass = "text-white";
+  const currentSubtitleClass = "text-slate-300";
 
   const breadcrumbs = location.pathname
     .split("/")
@@ -101,7 +101,7 @@ export default function Layout() {
       <motion.aside
         animate={{ width: isMobile ? 280 : isCollapsed ? 88 : 320 }}
         transition={{ type: "spring", stiffness: 280, damping: 28 }}
-        className={`sidebar flex-shrink-0 flex flex-col bg-gradient-to-b from-[#0B0B12] via-[#0A0A0F] to-[#111827] shadow-[0_30px_90px_rgba(0,0,0,0.35)] border-r border-white/10 overflow-hidden ${isMobile
+        className={`sidebar flex-shrink-0 flex flex-col bg-[#0f172a] shadow-xl border-r border-slate-800 overflow-hidden ${isMobile
           ? `fixed inset-y-0 left-0 z-50 transition-transform duration-300 ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}`
           : "relative"
           }`}
@@ -109,7 +109,7 @@ export default function Layout() {
         <div className="flex flex-col h-full">
           <div className="sidebar-brand flex items-start justify-between px-6 py-5">
             <div className="flex items-center gap-3">
-              <div className="sidebar-logo flex h-14 w-14 items-center justify-center rounded-3xl bg-transparent border-0 overflow-hidden">
+              <div className="sidebar-logo flex h-12 w-12 items-center justify-center rounded-xl bg-transparent overflow-hidden">
                 <img src={logoImg} alt="Logo EPF" className="w-full h-full object-contain" />
               </div>
               {!effectiveCollapsed && (
@@ -121,7 +121,7 @@ export default function Layout() {
             {isMobile ? (
               <button
                 onClick={() => setIsMobileOpen(false)}
-                className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10 border border-white/20 text-white hover:bg-white/15 transition"
+                className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 border border-white/20 text-white hover:bg-white/15 transition"
                 aria-label="Fermer la barre latérale"
               >
                 <ChevronLeft size={18} />
@@ -129,7 +129,7 @@ export default function Layout() {
             ) : !isCollapsed ? (
               <button
                 onClick={() => setIsCollapsed(true)}
-                className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10 border border-white/20 text-white hover:bg-white/15 transition"
+                className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 border border-white/20 text-white hover:bg-white/15 transition"
                 aria-label="Réduire la barre latérale"
               >
                 <ChevronLeft size={18} />
@@ -137,7 +137,7 @@ export default function Layout() {
             ) : (
               <button
                 onClick={() => setIsCollapsed(false)}
-                className="mx-auto mt-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-[#111827] border border-white/10 text-white hover:bg-[#0b1220] transition"
+                className="mx-auto mt-3 flex h-10 w-10 items-center justify-center rounded-lg bg-[#111827] border border-white/10 text-white hover:bg-[#0b1220] transition"
                 aria-label="Ouvrir la barre latérale"
               >
                 <ChevronRight size={18} />
@@ -145,8 +145,8 @@ export default function Layout() {
             )}
           </div>
 
-          <div className="mt-4 flex-1 overflow-y-auto px-2 pb-4">
-            <nav className="space-y-2">
+          <div className="mt-4 flex-1 overflow-y-auto px-3 pb-4">
+            <nav className="space-y-1.5">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 return (
@@ -154,21 +154,14 @@ export default function Layout() {
                     key={item.to}
                     to={item.to}
                     className={({ isActive }) =>
-                      `nav-link relative flex items-center gap-4 rounded-3xl px-4 py-4 text-sm font-semibold transition-all duration-200 ${isActive ? "active text-white" : "text-white/80 hover:text-white"
+                      `nav-link relative flex items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-semibold transition-all duration-200 ${isActive ? "active text-white bg-[#FF0000]/15 border border-[#FF0000]/30" : "text-slate-300 hover:text-white hover:bg-white/5"
                       }`
                     }
                   >
                     {({ isActive }) => (
                       <>
-                        {isActive && (
-                          <motion.div
-                            layoutId="activeNavBackground"
-                            className="absolute inset-0 rounded-3xl bg-white/10 shadow-[0_15px_35px_rgba(255,255,255,0.18)]"
-                            transition={{ type: "spring", stiffness: 320, damping: 30 }}
-                          />
-                        )}
-                        <span className="nav-icon relative z-10 flex h-11 w-11 items-center justify-center rounded-2xl text-white shadow-inner shadow-red-500/10">
-                          <Icon size={20} />
+                        <span className={`nav-icon relative z-10 flex h-9 w-9 items-center justify-center rounded-lg ${isActive ? "text-[#FF0000]" : "text-slate-400"}`}>
+                          <Icon size={18} />
                         </span>
                         {!effectiveCollapsed && (
                           <span className="relative z-10">{item.label}</span>
@@ -181,22 +174,22 @@ export default function Layout() {
             </nav>
           </div>
 
-          <div className="sidebar-footer border-t border-[#374151] px-6 py-5">
-            <div className="user-card rounded-[32px] bg-[#0f172a] border border-[#374151] p-4 shadow-[0_20px_40px_rgba(0,0,0,0.45)] backdrop-blur-xl">
-              <div className="flex items-center gap-4">
-                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#111827] ring-1 ring-[#475569]/20 text-xl font-black text-white shadow-sm">
+          <div className="sidebar-footer border-t border-slate-800 px-4 py-4">
+            <div className="user-card rounded-xl bg-slate-900/80 border border-slate-800 p-3.5 shadow-md">
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-slate-800 text-base font-bold text-white shadow-sm shrink-0">
                   {initiales}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-base font-semibold tracking-[0.12em] uppercase">{user?.name}</p>
-                  <p className="text-[11px] uppercase tracking-[0.24em] text-white/90 mt-1">Mon espace utilisateur</p>
+                  <p className="text-base font-semibold truncate text-white">{user?.name}</p>
+                  <p className="text-xs text-slate-400 mt-0.5 truncate font-medium">{roleLabel}</p>
                 </div>
               </div>
               {!effectiveCollapsed && (
-                <div className="mt-4 grid gap-2">
+                <div className="mt-3">
                   <button
                     onClick={handleLogout}
-                    className="rounded-2xl bg-[#FF0000] py-2 text-[13px] font-semibold uppercase tracking-[0.16em] text-white transition hover:bg-[#D50048]"
+                    className="w-full rounded-lg bg-[#FF0000] py-2.5 text-sm font-semibold uppercase tracking-wide text-white transition hover:bg-[#D50048]"
                   >
                     Déconnexion
                   </button>
@@ -208,33 +201,32 @@ export default function Layout() {
       </motion.aside>
 
       <div className="main-area flex-1 flex min-w-0 flex-col bg-[#09090B]">
-        <header className="topbar sticky top-0 z-40 border-b border-white/10 bg-black text-white backdrop-blur-2xl shadow-[0_8px_40px_rgba(0,0,0,0.25)]">
-          <div className="mx-auto flex w-full max-w-full flex-col gap-6 px-6 py-8 lg:px-8">
-            <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+        <header className="topbar sticky top-0 z-40 border-b border-slate-800 bg-[#0f172a]/95 text-white backdrop-blur-md shadow-sm">
+          <div className="mx-auto flex w-full max-w-full flex-col gap-4 px-6 py-6 lg:px-8">
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
               <div className="flex min-w-0 items-start gap-4">
                 <button
                   onClick={() => setIsMobileOpen(true)}
-                  className="lg:hidden mt-1 flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-black/5 border border-black/10 text-black hover:bg-black/10 transition"
+                  className="lg:hidden mt-1 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-slate-800 text-white hover:bg-slate-700 transition"
                   aria-label="Ouvrir la barre latérale"
                 >
                   <Menu size={20} />
                 </button>
                 <div className="min-w-0">
-                  <div className="breadcrumb mb-3 flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.28em] text-[#D50048]/80">
+                  <div className="breadcrumb mb-2 flex flex-wrap items-center gap-2 text-xs font-semibold text-[#FF0000]">
                     <span>Tableau</span>
                     {breadcrumbs.map((crumb) => (
                       <span key={crumb.to} className="inline-flex items-center gap-2">
-                        <span className="text-[#FF0000]/60">/</span>
-                        <span className="truncate text-white/70">{crumb.label}</span>
+                        <span className="text-slate-500">/</span>
+                        <span className="truncate text-slate-300 font-normal">{crumb.label}</span>
                       </span>
                     ))}
                   </div>
-                  <h1 className={`text-4xl font-bold tracking-tight ${currentTitleClass} md:text-5xl`}>{currentRouteInfo.title}</h1>
-                  <p className={`mt-3 max-w-3xl text-sm leading-7 ${currentSubtitleClass}`}>{currentRouteInfo.subtitle}</p>
+                  <h1 className={`text-3xl font-bold tracking-tight ${currentTitleClass} md:text-4xl`}>{currentRouteInfo.title}</h1>
+                  <p className={`mt-2 max-w-3xl text-base ${currentSubtitleClass}`}>{currentRouteInfo.subtitle}</p>
                 </div>
               </div>
             </div>
-
           </div>
         </header>
 

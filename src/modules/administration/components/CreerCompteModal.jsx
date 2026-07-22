@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { administrationApi } from "../../../shared/api/administrationApi";
+import { CheckCircle2, AlertTriangle } from "lucide-react";
 
 const NIVEAUX = ["Licence 1", "Licence 2", "Licence 3", "Master 1", "Master 2"];
 
@@ -211,7 +212,9 @@ export default function CreerCompteModal({ type, account, onClose, onCompteCree 
                 ))}
               </select>
             </div>
-            <p className="dossier-meta" style={{ color: "var(--success)" }}>✓ Les comptes étudiants sont permanents et n'expirent jamais.</p>
+            <p className="dossier-meta" style={{ color: "var(--success)", display: "flex", alignItems: "center", gap: 6 }}>
+              <CheckCircle2 size={14} /> Les comptes étudiants sont permanents et n'expirent jamais.
+            </p>
           </>
         )}
 
@@ -227,7 +230,9 @@ export default function CreerCompteModal({ type, account, onClose, onCompteCree 
                 <input type="number" min="1" max="25" value={champs.capacite_encadrement} onChange={setChamp("capacite_encadrement")} required />
               </div>
             </div>
-            <p className="dossier-meta" style={{ color: "var(--success)" }}>✓ Les comptes enseignants/encadreurs sont permanents et n'expirent jamais.</p>
+            <p className="dossier-meta" style={{ color: "var(--success)", display: "flex", alignItems: "center", gap: 6 }}>
+              <CheckCircle2 size={14} /> Les comptes enseignants/encadreurs sont permanents et n'expirent jamais.
+            </p>
           </>
         )}
 
@@ -243,7 +248,9 @@ export default function CreerCompteModal({ type, account, onClose, onCompteCree 
                 <input type="date" value={champs.date_fin_acces} onChange={setChamp("date_fin_acces")} />
               </div>
             </div>
-            <p className="dossier-meta" style={{ color: "var(--warning)" }}>⚠️ Le compte jury possède une validité limitée dans le temps et expirera automatiquement à la date de fin.</p>
+            <p className="dossier-meta" style={{ color: "var(--warning)", display: "flex", alignItems: "center", gap: 6 }}>
+              <AlertTriangle size={14} /> Le compte jury possède une validité limitée dans le temps et expirera automatiquement à la date de fin.
+            </p>
           </>
         )}
 

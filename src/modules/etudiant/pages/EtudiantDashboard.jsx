@@ -11,6 +11,7 @@ import {
   Calendar,
   CheckCircle,
   Award,
+  GraduationCap,
   ChevronRight,
   TrendingUp,
   MapPin,
@@ -120,8 +121,8 @@ export default function EtudiantDashboard() {
           <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
 
           <div className="flex items-center gap-3 mb-6">
-            <Award className="text-emerald-500" size={28} />
-            <h2 className="text-xl font-bold text-emerald-400">🎓 Résultats Officiels de Soutenance</h2>
+            <GraduationCap className="text-emerald-500" size={26} />
+            <h2 className="text-xl font-bold text-emerald-400">Résultats Officiels de Soutenance</h2>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
@@ -390,7 +391,7 @@ export default function EtudiantDashboard() {
             </div>
 
             <div className="space-y-2">
-              <h2 className="text-2xl font-extrabold text-[var(--navy)] tracking-tight">Félicitations ! 🎉</h2>
+              <h2 className="text-2xl font-extrabold text-[var(--navy)] tracking-tight">Félicitations !</h2>
               <p className="text-sm text-[var(--ink-soft)]">
                 Votre Procès-Verbal de soutenance a été officiellement généré par l'administration.
               </p>

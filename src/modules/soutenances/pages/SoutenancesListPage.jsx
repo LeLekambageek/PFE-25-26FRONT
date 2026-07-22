@@ -4,6 +4,7 @@ import { useAuth } from "../../../shared/auth/AuthContext";
 import { administrationApi } from "../../../shared/api/administrationApi";
 import SoutenanceForm from "../components/SoutenanceForm";
 import StatusBadge from "../../../shared/components/StatusBadge";
+import { CheckCircle, FileText } from "lucide-react";
 
 export default function SoutenancesListPage() {
   const { user, hasRole } = useAuth();
@@ -222,7 +223,9 @@ export default function SoutenancesListPage() {
                           <li key={m.id}>
                             <span style={{ textTransform: "capitalize" }}><strong>{m.role_jury}</strong></span> : {m.membre?.name} 
                             {m.notes_validees ? (
-                              <span style={{ color: "var(--success)", marginLeft: 6, fontWeight: "bold" }}>(Notes validées ✓)</span>
+                              <span style={{ color: "var(--success)", marginLeft: 6, fontWeight: "bold", display: "inline-flex", alignItems: "center", gap: 3 }}>
+                                <CheckCircle size={13} /> (Notes validées)
+                              </span>
                             ) : (
                               <span style={{ color: "var(--warning)", marginLeft: 6 }}>(Notation en cours)</span>
                             )}
@@ -245,9 +248,9 @@ export default function SoutenancesListPage() {
                             <a
                               href={`${apiClient.defaults.baseURL}/soutenances/${s.id}/proces-verbaux/${pv.id}/download`}
                               className="btn btn-ghost"
-                              style={{ minHeight: 30, padding: "4px 8px", fontSize: 12 }}
+                              style={{ minHeight: 30, padding: "4px 8px", fontSize: 12, display: "inline-flex", alignItems: "center", gap: 4 }}
                             >
-                              Télécharger le PDF 📄
+                              <FileText size={14} /> Télécharger le PDF
                             </a>
                             {!pv.est_signe && (
                               <button
@@ -259,7 +262,9 @@ export default function SoutenancesListPage() {
                               </button>
                             )}
                             {pv.est_signe && (
-                              <span style={{ fontSize: 12, color: "var(--success)", fontWeight: "bold", alignSelf: "center" }}>Signed ✓</span>
+                              <span style={{ fontSize: 12, color: "var(--success)", fontWeight: "bold", alignSelf: "center", display: "inline-flex", alignItems: "center", gap: 4 }}>
+                                <CheckCircle size={13} /> Signé
+                              </span>
                             )}
                           </div>
                         </div>

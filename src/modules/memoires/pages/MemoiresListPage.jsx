@@ -3,6 +3,7 @@ import apiClient from "../../../shared/api/apiClient";
 import { useAuth } from "../../../shared/auth/AuthContext";
 import MemoireForm from "../components/MemoireForm";
 import StatusBadge from "../../../shared/components/StatusBadge";
+import { Check, CheckCircle, CheckCircle2, ArrowRight, AlertTriangle, Download, FileEdit } from "lucide-react";
 
 export default function MemoiresListPage() {
   const { user } = useAuth();
@@ -323,12 +324,12 @@ export default function MemoiresListPage() {
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 12 }}>
                         <div>
                           {m.statut === "soutenu" ? (
-                            <span className="badge badge-valide" style={{ background: "var(--success-bg)", color: "var(--success)", fontSize: 11 }}>
-                              ✓ Terminé
+                            <span className="badge badge-valide" style={{ background: "var(--success-bg)", color: "var(--success)", fontSize: 11, display: "inline-flex", alignItems: "center", gap: 4 }}>
+                              <Check size={13} /> Terminé
                             </span>
                           ) : m.eligible_soutenance ? (
-                            <span className="badge badge-valide" style={{ background: "var(--success-bg)", color: "var(--success)", fontSize: 11 }}>
-                              ✓ Éligible Soutenance
+                            <span className="badge badge-valide" style={{ background: "var(--success-bg)", color: "var(--success)", fontSize: 11, display: "inline-flex", alignItems: "center", gap: 4 }}>
+                              <CheckCircle2 size={13} /> Éligible Soutenance
                             </span>
                           ) : (
                             <span className="badge badge-en_cours" style={{ background: "var(--warning-bg)", color: "var(--warning)", fontSize: 11 }}>
@@ -339,13 +340,13 @@ export default function MemoiresListPage() {
 
                         <div className="actions-row" style={{ margin: 0 }}>
                           {(estEncadreur || estEtudiant) && (
-                            <button className="btn btn-primary" style={{ minHeight: 32, fontSize: 12 }} onClick={() => handleSelectMemoire(m)}>
-                              Suivi & Progression →
+                            <button className="btn btn-primary" style={{ minHeight: 32, fontSize: 12, display: "inline-flex", alignItems: "center", gap: 4 }} onClick={() => handleSelectMemoire(m)}>
+                              Suivi & Progression <ArrowRight size={14} />
                             </button>
                           )}
                           {estAdmin && (
-                            <button className="btn" style={{ minHeight: 32, fontSize: 12 }} onClick={() => handleSelectMemoire(m)}>
-                              Détails versions →
+                            <button className="btn" style={{ minHeight: 32, fontSize: 12, display: "inline-flex", alignItems: "center", gap: 4 }} onClick={() => handleSelectMemoire(m)}>
+                              Détails versions <ArrowRight size={14} />
                             </button>
                           )}
                         </div>
@@ -405,8 +406,8 @@ export default function MemoiresListPage() {
               {/* Defense eligibility switch */}
               {estEncadreur && !selectedMemoire.eligible_soutenance && selectedMemoire.statut === "valide_final" && (
                 <div style={{ background: "var(--warning-bg)", border: "1px solid var(--warning)", padding: 12, borderRadius: 8, marginBottom: 16 }}>
-                  <p className="dossier-meta" style={{ color: "var(--ink)", fontWeight: "bold" }}>
-                    ⚠️ Mémoire Validé Final. Voulez-vous accorder l'autorisation de soutenance ?
+                  <p className="dossier-meta" style={{ color: "var(--ink)", fontWeight: "bold", display: "flex", alignItems: "center", gap: 6 }}>
+                    <AlertTriangle size={16} className="text-amber-500 shrink-0" /> Mémoire Validé Final. Voulez-vous accorder l'autorisation de soutenance ?
                   </p>
                   <button 
                     className="btn btn-primary" 
@@ -468,17 +469,17 @@ export default function MemoiresListPage() {
                         </p>
                         
                         <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-                          <button className="btn btn-ghost" style={{ minHeight: 28, padding: "2px 8px", fontSize: 11 }} onClick={() => handleDownloadVersion(v)}>
-                            Télécharger 📥
+                          <button className="btn btn-ghost" style={{ minHeight: 28, padding: "2px 8px", fontSize: 11, display: "inline-flex", alignItems: "center", gap: 4 }} onClick={() => handleDownloadVersion(v)}>
+                            <Download size={13} /> Télécharger
                           </button>
                           {estEncadreur && v.statut !== "valide" && (
-                            <button className="btn" style={{ minHeight: 28, padding: "2px 8px", fontSize: 11 }} onClick={() => handleSelectVersion(v)}>
-                              Évaluer / Recommander ✍️
+                            <button className="btn" style={{ minHeight: 28, padding: "2px 8px", fontSize: 11, display: "inline-flex", alignItems: "center", gap: 4 }} onClick={() => handleSelectVersion(v)}>
+                              <FileEdit size={13} /> Évaluer / Recommander
                             </button>
                           )}
                           {estEncadreur && v.statut !== "valide" && v.pourcentage_avancement >= 80 && (
-                            <button className="btn btn-primary" style={{ minHeight: 28, padding: "2px 8px", fontSize: 11 }} onClick={() => handleValiderFinale(v.id)}>
-                              Valider Finale ✓
+                            <button className="btn btn-primary" style={{ minHeight: 28, padding: "2px 8px", fontSize: 11, display: "inline-flex", alignItems: "center", gap: 4 }} onClick={() => handleValiderFinale(v.id)}>
+                              <CheckCircle size={13} /> Valider Finale
                             </button>
                           )}
                         </div>

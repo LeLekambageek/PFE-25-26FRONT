@@ -17,7 +17,10 @@ import {
   X,
   AlertCircle,
   Layers,
-  GraduationCap
+  GraduationCap,
+  FileEdit,
+  Lock,
+  ArrowRight
 } from "lucide-react";
 
 const CRITERES = [
@@ -263,15 +266,23 @@ export default function JuryDashboard() {
 
                     <div className="flex justify-between items-center pt-3 border-t border-white/5 border-dashed">
                       {estNotesValidees ? (
-                        <span className="text-xs text-emerald-600 font-bold flex items-center gap-1">✓ Notes Validées</span>
+                        <span className="text-xs text-emerald-600 font-bold flex items-center gap-1">
+                          <CheckCircle size={14} /> Notes Validées
+                        </span>
                       ) : s.statut === "terminee" ? (
                         <span className="text-xs text-gray-400 font-bold">Clôturée</span>
                       ) : (
-                        <span className="text-xs text-amber-600 font-bold flex items-center gap-1">✍️ Évaluation en cours</span>
+                        <span className="text-xs text-amber-600 font-bold flex items-center gap-1">
+                          <FileEdit size={14} /> Évaluation en cours
+                        </span>
                       )}
                       
                       <span className="text-xs text-[#FF0000] font-bold flex items-center gap-1">
-                        {estActive ? "Consultation active ●" : "Évaluer →"}
+                        {estActive ? (
+                          <span className="flex items-center gap-1.5"><Clock size={14} /> Consultation active</span>
+                        ) : (
+                          <span className="flex items-center gap-1">Évaluer <ArrowRight size={14} /></span>
+                        )}
                       </span>
                     </div>
                   </div>
@@ -369,9 +380,13 @@ export default function JuryDashboard() {
                 </div>
                 
                 {notesValidees ? (
-                  <p className="text-xs font-bold">✓ Notes validées définitivement et transmises à l'administration.</p>
+                  <p className="text-xs font-bold flex items-center justify-center gap-1.5 text-emerald-400">
+                    <CheckCircle size={14} /> Notes validées définitivement et transmises à l'administration.
+                  </p>
                 ) : estSoutenanceTerminee ? (
-                  <p className="text-xs font-bold">🔒 Session de soutenance clôturée (en lecture seule).</p>
+                  <p className="text-xs font-bold flex items-center justify-center gap-1.5 text-slate-300">
+                    <Lock size={14} /> Session de soutenance clôturée (en lecture seule).
+                  </p>
                 ) : (
                   <p className="text-xs font-medium">Brouillon d'évaluation en cours. Enregistrez ou verrouillez ci-dessous.</p>
                 )}
