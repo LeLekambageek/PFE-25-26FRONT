@@ -4,8 +4,8 @@ import { useAuth } from "../auth/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { LayoutDashboard, Users, GitPullRequest, Briefcase, GraduationCap, BookOpen, Presentation, Library, Building2, ChevronLeft, ChevronRight, Search, Plus, Sparkles, CalendarDays, Menu, Command } from "lucide-react";
 import NotificationBell from "./NotificationBell";
-import logoImg from "../../assets/EPFBLACK.png";
-//import logoImg from "C:/Users/lheri/OneDrive/Bureau/PFE_Sayba_MOI/PFE_FRONT/src/assets/EPFBLACK.png";
+import logoImg from "../../assets/logo header.png";
+import logoFallback from "../../assets/EPFBLACK.png";
 
 const NAV_ITEMS = [
   { to: "/etudiant", label: "Tableau de bord", roles: ["etudiant"], icon: LayoutDashboard },
@@ -107,15 +107,15 @@ export default function Layout() {
           }`}
       >
         <div className="flex flex-col h-full">
-          <div className="sidebar-brand flex items-center justify-between px-5 py-5 border-b border-slate-800/80">
-            <div className="flex items-center gap-3.5">
-              <div className="sidebar-logo flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white p-1 shadow-lg overflow-hidden">
-                <img src={logoImg} alt="Logo EPF Africa" className="w-full h-full object-contain" />
-              </div>
-              {!effectiveCollapsed && (
-                <div className="text-white leading-tight">
-                  <p className="text-lg font-extrabold tracking-wider uppercase text-white">EPF Africa</p>
-                  <p className="text-xs text-slate-400 font-medium">École d'Ingénieurs</p>
+          <div className="sidebar-brand flex items-center justify-between px-4 py-4 border-b border-slate-800/80 bg-[#0b1220]">
+            <div className="flex items-center gap-3 min-w-0 flex-1">
+              {!effectiveCollapsed ? (
+                <div className="sidebar-logo flex h-16 w-full max-w-[210px] items-center justify-center rounded-xl bg-white p-2 shadow-xl border border-slate-200 overflow-hidden">
+                  <img src={logoImg} alt="Logo EPF Africa" className="w-full h-full object-contain" />
+                </div>
+              ) : (
+                <div className="sidebar-logo flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white p-1 shadow-lg overflow-hidden">
+                  <img src={logoImg} alt="Logo EPF Africa" className="w-full h-full object-contain" />
                 </div>
               )}
             </div>
