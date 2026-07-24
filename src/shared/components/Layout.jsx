@@ -107,14 +107,15 @@ export default function Layout() {
           }`}
       >
         <div className="flex flex-col h-full">
-          <div className="sidebar-brand flex items-start justify-between px-6 py-5">
-            <div className="flex items-center gap-3">
-              <div className="sidebar-logo flex h-12 w-12 items-center justify-center rounded-xl bg-transparent overflow-hidden">
-                <img src={logoImg} alt="Logo EPF" className="w-full h-full object-contain" />
+          <div className="sidebar-brand flex items-center justify-between px-5 py-5 border-b border-slate-800/80">
+            <div className="flex items-center gap-3.5">
+              <div className="sidebar-logo flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white p-1 shadow-lg overflow-hidden">
+                <img src={logoImg} alt="Logo EPF Africa" className="w-full h-full object-contain" />
               </div>
               {!effectiveCollapsed && (
-                <div className="text-white leading-tight pt-1">
-                  <p className="text-base font-semibold tracking-[0.12em] uppercase">EPF Africa</p>
+                <div className="text-white leading-tight">
+                  <p className="text-lg font-extrabold tracking-wider uppercase text-white">EPF Africa</p>
+                  <p className="text-xs text-slate-400 font-medium">École d'Ingénieurs</p>
                 </div>
               )}
             </div>
