@@ -211,7 +211,7 @@ export default function SoutenancesListPage() {
                     Sujet: <strong>"{s.memoire?.titre}"</strong>
                   </p>
                   <p className="dossier-meta" style={{ marginTop: 2 }}>
-                    Date : <strong>{s.date_soutenance?.slice(0, 10)}</strong> à <strong>{s.heure_debut}</strong> — Salle : <strong>{s.salle}</strong>
+                    Date : <strong>{s.date_soutenance?.slice(0, 10)}</strong> à <strong>{s.heure_debut}</strong>, Salle : <strong>{s.salle}</strong>
                   </p>
 
                   {/* Jury details */}

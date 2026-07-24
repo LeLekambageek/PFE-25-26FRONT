@@ -124,7 +124,7 @@ export default function EncadreurDashboard() {
                   <div className="space-y-1.5 flex-1 min-w-0">
                     <p className="text-base font-bold text-[var(--ink)] truncate">{etudiant.user?.name}</p>
                     <p className="text-xs text-[var(--ink-soft)] font-medium">
-                      Matricule : <strong className="text-[var(--ink)]">{etudiant.matricule}</strong> — Filière : <strong className="text-[var(--ink)]">{etudiant.filière}</strong>
+                      Matricule : <strong className="text-[var(--ink)]">{etudiant.matricule}</strong>, Filière : <strong className="text-[var(--ink)]">{etudiant.filière}</strong>
                     </p>
                     <p className="text-xs text-[var(--ink-soft)]">
                       Niveau académique : <strong className="text-[var(--ink)]">{etudiant.niveau}</strong>

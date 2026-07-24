@@ -203,7 +203,7 @@ export default function AffectationsPage() {
                       <span className={`badge badge-${c.statut}`}>{c.statut}</span>
                     </div>
                     <p className="dossier-meta" style={{ marginTop: 6 }}>
-                      Étudiant : <strong>{c.etudiant?.user?.name}</strong> — Entreprise : <strong>{c.entreprise?.raison_sociale || "Non spécifiée"}</strong>
+                      Étudiant : <strong>{c.etudiant?.user?.name}</strong>, Entreprise : <strong>{c.entreprise?.raison_sociale || "Non spécifiée"}</strong>
                     </p>
                     <p className="dossier-meta" style={{ marginTop: 2 }}>
                       Date candidature : {new Date(c.date_candidature).toLocaleDateString("fr-FR")}
@@ -275,7 +275,7 @@ export default function AffectationsPage() {
                   <div style={{ flex: 1 }}>
                     <p className="dossier-title">{s.titre}</p>
                     <p className="dossier-meta" style={{ marginTop: 4 }}>
-                      Étudiant : <strong>{s.etudiant?.user?.name}</strong> — Entreprise : <strong>{s.entreprise?.raison_sociale}</strong>
+                      Étudiant : <strong>{s.etudiant?.user?.name}</strong>, Entreprise : <strong>{s.entreprise?.raison_sociale}</strong>
                     </p>
                     <p className="dossier-meta" style={{ marginTop: 2 }}>
                       Dates : du {new Date(s.date_debut).toLocaleDateString("fr-FR")} au {new Date(s.date_fin).toLocaleDateString("fr-FR")}

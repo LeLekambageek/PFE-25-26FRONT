@@ -203,7 +203,7 @@ export default function Layout() {
       <div className="main-area flex-1 flex min-w-0 flex-col bg-[#09090B]">
         <header className="topbar sticky top-0 z-40 border-b border-slate-800 bg-[#0f172a]/95 text-white backdrop-blur-md shadow-sm">
           <div className="mx-auto flex w-full max-w-full flex-col gap-4 px-6 py-6 lg:px-8">
-            <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
               <div className="flex min-w-0 items-start gap-4">
                 <button
                   onClick={() => setIsMobileOpen(true)}
@@ -213,18 +213,21 @@ export default function Layout() {
                   <Menu size={20} />
                 </button>
                 <div className="min-w-0">
-                  <div className="breadcrumb mb-2 flex flex-wrap items-center gap-2 text-xs font-semibold text-[#FF0000]">
-                    <span>Tableau</span>
+                  <div className="breadcrumb mb-1.5 flex flex-wrap items-center gap-2 text-xs text-[#FF0000] font-medium">
+                    <span>Espace</span>
                     {breadcrumbs.map((crumb) => (
                       <span key={crumb.to} className="inline-flex items-center gap-2">
                         <span className="text-slate-500">/</span>
-                        <span className="truncate text-slate-300 font-normal">{crumb.label}</span>
+                        <span className="truncate text-slate-300 capitalize">{crumb.label}</span>
                       </span>
                     ))}
                   </div>
-                  <h1 className={`text-3xl font-bold tracking-tight ${currentTitleClass} md:text-4xl`}>{currentRouteInfo.title}</h1>
-                  <p className={`mt-2 max-w-3xl text-base ${currentSubtitleClass}`}>{currentRouteInfo.subtitle}</p>
+                  <h1 className={`text-2xl font-bold ${currentTitleClass} md:text-3xl`}>{currentRouteInfo.title}</h1>
+                  <p className={`mt-1 max-w-3xl text-sm ${currentSubtitleClass}`}>{currentRouteInfo.subtitle}</p>
                 </div>
+              </div>
+              <div className="flex items-center gap-3 shrink-0 self-end lg:self-center">
+                <NotificationBell />
               </div>
             </div>
           </div>

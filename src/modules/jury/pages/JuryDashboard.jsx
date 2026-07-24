@@ -260,7 +260,7 @@ export default function JuryDashboard() {
                       </p>
                       <div className="flex items-center gap-2 text-xs text-[var(--ink-muted)] font-medium">
                         <Clock size={14} className="text-[var(--ink-muted)]" />
-                        <span>Le {new Date(s.date_soutenance).toLocaleDateString("fr-FR")} à {s.heure_debut} — Salle : {s.salle}</span>
+                        <span>Le {new Date(s.date_soutenance).toLocaleDateString("fr-FR")} à {s.heure_debut}, Salle : {s.salle}</span>
                       </div>
                     </div>
 

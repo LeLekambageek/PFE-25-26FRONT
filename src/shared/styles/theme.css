@@ -55,34 +55,10 @@ body {
   background-image: none;
   color: var(--ink);
   font-family: var(--font-body);
-  font-size: 17px;
-  line-height: 1.65;
+  font-size: 15px;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   position: relative;
-}
-
-/* Global Typography Scaling Overrides (Human-readable, clear sizes) */
-.text-\[10px\],
-.text-\[11px\] {
-  font-size: 13px !important;
-}
-.text-xs {
-  font-size: 14px !important;
-}
-.text-sm {
-  font-size: 15.5px !important;
-}
-.text-base {
-  font-size: 17px !important;
-}
-.text-lg {
-  font-size: 19.5px !important;
-}
-.text-xl {
-  font-size: 23px !important;
-}
-.text-2xl {
-  font-size: 27px !important;
 }
 
 html {
