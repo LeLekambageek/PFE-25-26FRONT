@@ -107,15 +107,15 @@ export default function Layout() {
           }`}
       >
         <div className="flex flex-col h-full">
-          <div className="sidebar-brand flex items-center justify-between px-4 py-4 border-b border-slate-800/80 bg-[#0b1220]">
-            <div className="flex items-center gap-3 min-w-0 flex-1">
-              {!effectiveCollapsed ? (
-                <div className="sidebar-logo flex h-16 w-full max-w-[210px] items-center justify-center rounded-xl bg-white p-2 shadow-xl border border-slate-200 overflow-hidden">
-                  <img src={logoImg} alt="Logo EPF Africa" className="w-full h-full object-contain" />
-                </div>
-              ) : (
-                <div className="sidebar-logo flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white p-1 shadow-lg overflow-hidden">
-                  <img src={logoImg} alt="Logo EPF Africa" className="w-full h-full object-contain" />
+          <div className="sidebar-brand flex items-center justify-between px-5 py-5 border-b border-slate-800/80 bg-[#0b1220]">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="sidebar-logo flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-white p-1.5 shadow-lg border border-slate-200 overflow-hidden">
+                <img src={logoImg} alt="Logo EPF Africa" className="w-full h-full object-contain" />
+              </div>
+              {!effectiveCollapsed && (
+                <div className="text-white leading-tight min-w-0">
+                  <p className="text-xl font-black tracking-wider uppercase text-white truncate">EPF AFRICA</p>
+                  <p className="text-xs text-slate-400 font-semibold tracking-wide truncate">École d'Ingénieurs</p>
                 </div>
               )}
             </div>
