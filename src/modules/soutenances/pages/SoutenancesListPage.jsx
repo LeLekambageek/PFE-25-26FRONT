@@ -143,8 +143,17 @@ export default function SoutenancesListPage() {
     }
   };
 
-  const ouvrirJury = (soutenanceId) => {
-    setJuryOpenId(soutenanceId);
+  const ouvrirJury = (soutenance) => {
+    const estVerrouille = soutenance.resultats_publies ||
+      soutenance.statut === "terminee" ||
+      soutenance.statut === "soutenu" ||
+      (soutenance.jury && soutenance.jury.length > 0 && soutenance.jury.some(m => m.notes_validees || m.note != null));
+
+    if (estVerrouille) {
+      alert("La composition de ce jury est verrouillée car des notes ont déjà été saisies ou publiées.");
+      return;
+    }
+    setJuryOpenId(soutenance.id);
     setSelectedJure("");
     setSelectedRole("examinateur");
   };
@@ -159,7 +168,7 @@ export default function SoutenancesListPage() {
       setJuryOpenId(null);
       chargerDonnees();
     } catch (err) {
-      alert("Erreur : " + (err.response?.data?.message || "Erreur."));
+      alert("Erreur : " + (err.response?.data?.message || "Erreur lors de l'ajout."));
     }
   };
 
@@ -179,16 +188,14 @@ export default function SoutenancesListPage() {
           className={`btn ${onglet === "soutenances" ? "btn-primary" : "btn-ghost"}`}
           onClick={() => setOnglet("soutenances")}
         >
-          Soutenances Planifiées
+          1. Soutenances Programmées
         </button>
-        {estAdmin && (
-          <button
-            className={`btn ${onglet === "creneaux" ? "btn-primary" : "btn-ghost"}`}
-            onClick={() => setOnglet("creneaux")}
-          >
-            Créneaux & Réservations
-          </button>
-        )}
+        <button
+          className={`btn ${onglet === "creneaux" ? "btn-primary" : "btn-ghost"}`}
+          onClick={() => setOnglet("creneaux")}
+        >
+          2. Gestion des Créneaux Disponibles
+        </button>
       </div>
 
       {onglet === "soutenances" ? (
@@ -199,146 +206,171 @@ export default function SoutenancesListPage() {
             <p className="empty-state">Aucune soutenance programmée pour le moment.</p>
           ) : (
             <div style={{ display: "grid", gap: 16 }}>
-              {soutenances.map((s) => (
-                <div key={s.id} className={`dossier status-${s.statut}`} style={{ flexDirection: "column", alignItems: "stretch" }}>
-                  <div className="dossier-head" style={{ marginBottom: 4 }}>
-                    <p className="dossier-title" style={{ fontSize: 16 }}>
-                      Soutenance de : <strong>{s.memoire?.etudiant?.name || "Étudiant Inconnu"}</strong>
-                    </p>
-                    <StatusBadge statut={s.statut} />
-                  </div>
-                  <p className="dossier-meta">
-                    Sujet: <strong>"{s.memoire?.titre}"</strong>
-                  </p>
-                  <p className="dossier-meta" style={{ marginTop: 2 }}>
-                    Date : <strong>{s.date_soutenance?.slice(0, 10)}</strong> à <strong>{s.heure_debut}</strong>, Salle : <strong>{s.salle}</strong>
-                  </p>
+              {soutenances.map((s) => {
+                const estJuryVerrouille = s.resultats_publies ||
+                  s.statut === "terminee" ||
+                  s.statut === "soutenu" ||
+                  (s.jury && s.jury.length > 0 && s.jury.some(m => m.notes_validees || m.note != null));
 
-                  {/* Jury details */}
-                  <div style={{ marginTop: 8, padding: 8, background: "var(--surface)", borderRadius: 8 }}>
-                    <p className="dossier-meta" style={{ fontWeight: "bold", color: "var(--ink)" }}>Jury de soutenance :</p>
-                    {s.jury && s.jury.length > 0 ? (
-                      <ul style={{ margin: "4px 0 0 16px", padding: 0, fontSize: 13 }}>
-                        {s.jury.map((m) => (
-                          <li key={m.id}>
-                            <span style={{ textTransform: "capitalize" }}><strong>{m.role_jury}</strong></span> : {m.membre?.name} 
-                            {m.notes_validees ? (
-                              <span style={{ color: "var(--success)", marginLeft: 6, fontWeight: "bold", display: "inline-flex", alignItems: "center", gap: 3 }}>
-                                <CheckCircle size={13} /> (Notes validées)
-                              </span>
-                            ) : (
-                              <span style={{ color: "var(--warning)", marginLeft: 6 }}>(Notation en cours)</span>
-                            )}
-                          </li>
+                return (
+                  <div key={s.id} className={`dossier status-${s.statut}`} style={{ flexDirection: "column", alignItems: "stretch" }}>
+                    <div className="dossier-head" style={{ marginBottom: 4 }}>
+                      <p className="dossier-title" style={{ fontSize: 16 }}>
+                        Soutenance de : <strong>{s.memoire?.etudiant?.name || "Étudiant Inconnu"}</strong>
+                      </p>
+                      <StatusBadge statut={s.statut} />
+                    </div>
+                    <p className="dossier-meta">
+                      Sujet: <strong>"{s.memoire?.titre}"</strong>
+                    </p>
+                    <p className="dossier-meta" style={{ marginTop: 2 }}>
+                      Date : <strong>{s.date_soutenance?.slice(0, 10)}</strong> à <strong>{s.heure_debut}</strong>, Salle : <strong>{s.salle}</strong>
+                    </p>
+
+                    {/* Jury details */}
+                    <div style={{ marginTop: 8, padding: 8, background: "var(--surface)", borderRadius: 8 }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <p className="dossier-meta" style={{ fontWeight: "bold", color: "var(--ink)" }}>Jury de soutenance :</p>
+                        {estJuryVerrouille && (
+                          <span style={{ fontSize: 11, background: "rgba(148, 163, 184, 0.2)", color: "var(--ink-muted)", padding: "2px 8px", borderRadius: 4, fontStyle: "italic" }}>
+                            Composition verrouillée (notes saisies/publiées)
+                          </span>
+                        )}
+                      </div>
+                      {s.jury && s.jury.length > 0 ? (
+                        <ul style={{ margin: "4px 0 0 16px", padding: 0, fontSize: 13 }}>
+                          {s.jury.map((m) => (
+                            <li key={m.id}>
+                              <span style={{ textTransform: "capitalize" }}><strong>{m.role_jury}</strong></span> : {m.membre?.name} 
+                              {m.notes_validees ? (
+                                <span style={{ color: "var(--success)", marginLeft: 6, fontWeight: "bold", display: "inline-flex", alignItems: "center", gap: 3 }}>
+                                  <CheckCircle size={13} /> (Notes validées)
+                                </span>
+                              ) : (
+                                <span style={{ color: "var(--warning)", marginLeft: 6 }}>(Notation en cours)</span>
+                              )}
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="dossier-meta" style={{ fontStyle: "italic", marginLeft: 4 }}>Aucun membre dans le jury pour le moment.</p>
+                      )}
+                    </div>
+
+                    {/* PV List */}
+                    {s.proces_verbaux && s.proces_verbaux.length > 0 && (
+                      <div style={{ marginTop: 8, padding: 8, background: "var(--success-bg)", borderRadius: 8 }}>
+                        <p className="dossier-meta" style={{ fontWeight: "bold", color: "var(--success)" }}>Procès-verbaux disponibles :</p>
+                        {s.proces_verbaux.map((pv) => (
+                          <div key={pv.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 4 }}>
+                            <span style={{ fontSize: 13 }}>Généré le {new Date(pv.date_generation).toLocaleString("fr-FR")}</span>
+                            <div style={{ display: "flex", gap: 10 }}>
+                              <a
+                                href={`${apiClient.defaults.baseURL}/soutenances/${s.id}/proces-verbaux/${pv.id}/download`}
+                                className="btn btn-ghost"
+                                style={{ minHeight: 30, padding: "4px 8px", fontSize: 12, display: "inline-flex", alignItems: "center", gap: 4 }}
+                              >
+                                <FileText size={14} /> Télécharger le PDF
+                              </a>
+                              {!pv.est_signe && (
+                                <button
+                                  className="btn btn-primary"
+                                  style={{ minHeight: 30, padding: "4px 8px", fontSize: 12 }}
+                                  onClick={() => handleSignerPV(s.id, pv.id)}
+                                >
+                                  Signer électroniquement
+                                </button>
+                              )}
+                              {pv.est_signe && (
+                                <span style={{ fontSize: 12, color: "var(--success)", fontWeight: "bold", alignSelf: "center", display: "inline-flex", alignItems: "center", gap: 4 }}>
+                                  <CheckCircle size={13} /> Signé
+                                </span>
+                              )}
+                            </div>
+                          </div>
                         ))}
-                      </ul>
-                    ) : (
-                      <p className="dossier-meta" style={{ fontStyle: "italic", marginLeft: 4 }}>Aucun membre dans le jury pour le moment.</p>
+                      </div>
+                    )}
+
+                    {/* Actions Row */}
+                    {estAdmin && (
+                      <div className="actions-row" style={{ marginTop: 12, borderTop: "1px solid var(--border)", paddingTop: 10 }}>
+                        {estJuryVerrouille ? (
+                          <button
+                            className="btn"
+                            disabled
+                            title="Impossible de composer ou modifier le jury : des notes ont déjà été saisies ou publiées."
+                            style={{ opacity: 0.5, cursor: "not-allowed", background: "var(--surface)", color: "var(--ink-muted)", borderColor: "var(--border)" }}
+                          >
+                            Composer le Jury (Verrouillé)
+                          </button>
+                        ) : (
+                          <button className="btn" onClick={() => ouvrirJury(s)}>
+                            Composer le Jury
+                          </button>
+                        )}
+                        <button className="btn btn-ghost" onClick={() => handleEnvoyerConvocations(s.id)}>
+                          Envoyer les Convocations
+                        </button>
+                        {!s.resultats_publies && s.statut !== "annulee" && (
+                          <button className="btn btn-primary" onClick={() => handlePublierResultats(s.id)}>
+                            Publier les Résultats
+                          </button>
+                        )}
+                        {s.statut === "terminee" && (
+                          <button className="btn btn-primary" onClick={() => setPvOpenId(s.id)}>
+                            Générer le Procès-Verbal
+                          </button>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Inline Jury edit */}
+                    {juryOpenId === s.id && !estJuryVerrouille && (
+                      <div className="inline-edit" style={{ background: "var(--surface)", padding: 12, borderRadius: 8, marginTop: 10 }}>
+                        <label style={{ fontSize: 12, fontWeight: "bold", display: "block", marginBottom: 4 }}>Ajouter un juré :</label>
+                        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                          <select value={selectedJure} onChange={(e) => setSelectedJure(e.target.value)} style={{ flex: 1, minWidth: 180 }}>
+                            <option value="">-- Sélectionner --</option>
+                            {jures.map((j) => (
+                              <option key={j.id} value={j.id}>{j.name}</option>
+                            ))}
+                          </select>
+                          <select value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)}>
+                            <option value="president">Président</option>
+                            <option value="rapporteur">Rapporteur</option>
+                            <option value="examinateur">Examinateur</option>
+                          </select>
+                          <button className="btn btn-primary" onClick={() => confirmerJury(s.id)}>
+                            Ajouter au jury
+                          </button>
+                          <button className="btn btn-ghost" onClick={() => setJuryOpenId(null)}>
+                            Fermer
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* PV Generation popup/panel */}
+                    {pvOpenId === s.id && (
+                      <form onSubmit={(e) => handleGenererPV(e, s.id)} style={{ background: "var(--surface)", padding: 12, borderRadius: 8, marginTop: 10 }}>
+                        <label style={{ fontSize: 12, fontWeight: "bold", display: "block", marginBottom: 4 }}>Observations / Commentaires pour le procès-verbal :</label>
+                        <textarea
+                          value={pvComments}
+                          onChange={(e) => setPvComments(e.target.value)}
+                          placeholder="Insérez les délibérations du jury ou remarques particulières..."
+                          rows={3}
+                          style={{ width: "100%", marginBottom: 10 }}
+                        />
+                        <div className="actions-row">
+                          <button type="submit" className="btn btn-primary">Générer le PDF officiel</button>
+                          <button type="button" className="btn btn-ghost" onClick={() => setPvOpenId(null)}>Annuler</button>
+                        </div>
+                      </form>
                     )}
                   </div>
-
-                  {/* PV List */}
-                  {s.proces_verbaux && s.proces_verbaux.length > 0 && (
-                    <div style={{ marginTop: 8, padding: 8, background: "var(--success-bg)", borderRadius: 8 }}>
-                      <p className="dossier-meta" style={{ fontWeight: "bold", color: "var(--success)" }}>Procès-verbaux disponibles :</p>
-                      {s.proces_verbaux.map((pv) => (
-                        <div key={pv.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 4 }}>
-                          <span style={{ fontSize: 13 }}>Généré le {new Date(pv.date_generation).toLocaleString("fr-FR")}</span>
-                          <div style={{ display: "flex", gap: 10 }}>
-                            <a
-                              href={`${apiClient.defaults.baseURL}/soutenances/${s.id}/proces-verbaux/${pv.id}/download`}
-                              className="btn btn-ghost"
-                              style={{ minHeight: 30, padding: "4px 8px", fontSize: 12, display: "inline-flex", alignItems: "center", gap: 4 }}
-                            >
-                              <FileText size={14} /> Télécharger le PDF
-                            </a>
-                            {!pv.est_signe && (
-                              <button
-                                className="btn btn-primary"
-                                style={{ minHeight: 30, padding: "4px 8px", fontSize: 12 }}
-                                onClick={() => handleSignerPV(s.id, pv.id)}
-                              >
-                                Signer électroniquement
-                              </button>
-                            )}
-                            {pv.est_signe && (
-                              <span style={{ fontSize: 12, color: "var(--success)", fontWeight: "bold", alignSelf: "center", display: "inline-flex", alignItems: "center", gap: 4 }}>
-                                <CheckCircle size={13} /> Signé
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Actions Row */}
-                  {estAdmin && (
-                    <div className="actions-row" style={{ marginTop: 12, borderTop: "1px solid var(--border)", paddingTop: 10 }}>
-                      <button className="btn" onClick={() => ouvrirJury(s.id)}>
-                        Composer le Jury
-                      </button>
-                      <button className="btn btn-ghost" onClick={() => handleEnvoyerConvocations(s.id)}>
-                        Envoyer les Convocations
-                      </button>
-                      {!s.resultats_publies && s.statut !== "annulee" && (
-                        <button className="btn btn-primary" onClick={() => handlePublierResultats(s.id)}>
-                          Publier les Résultats
-                        </button>
-                      )}
-                      {s.statut === "terminee" && (
-                        <button className="btn btn-primary" onClick={() => setPvOpenId(s.id)}>
-                          Générer le Procès-Verbal
-                        </button>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Inline Jury edit */}
-                  {juryOpenId === s.id && (
-                    <div className="inline-edit" style={{ background: "var(--surface)", padding: 12, borderRadius: 8, marginTop: 10 }}>
-                      <label style={{ fontSize: 12, fontWeight: "bold", display: "block", marginBottom: 4 }}>Ajouter un juré :</label>
-                      <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-                        <select value={selectedJure} onChange={(e) => setSelectedJure(e.target.value)} style={{ flex: 1, minWidth: 180 }}>
-                          <option value="">-- Sélectionner --</option>
-                          {jures.map((j) => (
-                            <option key={j.id} value={j.id}>{j.name}</option>
-                          ))}
-                        </select>
-                        <select value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)}>
-                          <option value="president">Président</option>
-                          <option value="rapporteur">Rapporteur</option>
-                          <option value="examinateur">Examinateur</option>
-                        </select>
-                        <button className="btn btn-primary" onClick={() => confirmerJury(s.id)}>
-                          Ajouter au jury
-                        </button>
-                        <button className="btn btn-ghost" onClick={() => setJuryOpenId(null)}>
-                          Fermer
-                        </button>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* PV Generation popup/panel */}
-                  {pvOpenId === s.id && (
-                    <form onSubmit={(e) => handleGenererPV(e, s.id)} style={{ background: "var(--surface)", padding: 12, borderRadius: 8, marginTop: 10 }}>
-                      <label style={{ fontSize: 12, fontWeight: "bold", display: "block", marginBottom: 4 }}>Observations / Commentaires pour le procès-verbal :</label>
-                      <textarea
-                        value={pvComments}
-                        onChange={(e) => setPvComments(e.target.value)}
-                        placeholder="Insérez les délibérations du jury ou remarques particulières..."
-                        rows={3}
-                        style={{ width: "100%", marginBottom: 10 }}
-                      />
-                      <div className="actions-row">
-                        <button type="submit" className="btn btn-primary">Générer le PDF officiel</button>
-                        <button type="button" className="btn btn-ghost" onClick={() => setPvOpenId(null)}>Annuler</button>
-                      </div>
-                    </form>
-                  )}
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
