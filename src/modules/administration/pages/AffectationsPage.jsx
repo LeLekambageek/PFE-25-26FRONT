@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import apiClient from "../../../shared/api/apiClient";
 import { administrationApi } from "../../../shared/api/administrationApi";
+import { Plus, ExternalLink, CheckCircle, AlertTriangle } from "lucide-react";
 
 export default function AffectationsPage() {
   const [onglet, setOnglet] = useState("candidatures"); // candidatures, encadreurs
@@ -185,8 +186,8 @@ export default function AffectationsPage() {
         <div>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
             <h3>Candidatures de stages reçues</h3>
-            <button className="btn btn-primary" onClick={() => setAfficherDirectModal(true)}>
-              ➕ Créer un stage directement (Hors cand.)
+            <button className="btn btn-primary" style={{ display: "inline-flex", alignItems: "center", gap: 6 }} onClick={() => setAfficherDirectModal(true)}>
+              <Plus size={16} /> Créer un stage directement (Hors cand.)
             </button>
           </div>
 
@@ -202,7 +203,7 @@ export default function AffectationsPage() {
                       <span className={`badge badge-${c.statut}`}>{c.statut}</span>
                     </div>
                     <p className="dossier-meta" style={{ marginTop: 6 }}>
-                      Étudiant : <strong>{c.etudiant?.user?.name}</strong> — Entreprise : <strong>{c.entreprise?.raison_sociale || "Non spécifiée"}</strong>
+                      Étudiant : <strong>{c.etudiant?.user?.name}</strong>, Entreprise : <strong>{c.entreprise?.raison_sociale || "Non spécifiée"}</strong>
                     </p>
                     <p className="dossier-meta" style={{ marginTop: 2 }}>
                       Date candidature : {new Date(c.date_candidature).toLocaleDateString("fr-FR")}
@@ -214,13 +215,13 @@ export default function AffectationsPage() {
                     )}
                     <div style={{ marginTop: 8, display: "flex", gap: 12 }}>
                       {c.cv_path && (
-                        <a href={`${apiClient.defaults.baseURL?.replace("/api", "")}/storage/${c.cv_path}`} target="_blank" rel="noreferrer" style={{ fontSize: 13, color: "var(--gts-secondary)", fontWeight: "bold" }}>
-                          Voir le CV ↗
+                        <a href={`${apiClient.defaults.baseURL?.replace("/api", "")}/storage/${c.cv_path}`} target="_blank" rel="noreferrer" style={{ fontSize: 13, color: "var(--gts-secondary)", fontWeight: "bold", display: "inline-flex", alignItems: "center", gap: 3 }}>
+                          Voir le CV <ExternalLink size={13} />
                         </a>
                       )}
                       {c.lettre_motivation_path && (
-                        <a href={`${apiClient.defaults.baseURL?.replace("/api", "")}/storage/${c.lettre_motivation_path}`} target="_blank" rel="noreferrer" style={{ fontSize: 13, color: "var(--gts-secondary)", fontWeight: "bold" }}>
-                          Lettre de motivation ↗
+                        <a href={`${apiClient.defaults.baseURL?.replace("/api", "")}/storage/${c.lettre_motivation_path}`} target="_blank" rel="noreferrer" style={{ fontSize: 13, color: "var(--gts-secondary)", fontWeight: "bold", display: "inline-flex", alignItems: "center", gap: 3 }}>
+                          Lettre de motivation <ExternalLink size={13} />
                         </a>
                       )}
                     </div>
@@ -253,7 +254,9 @@ export default function AffectationsPage() {
                       </button>
                     )}
                     {c.statut === "stage_affecte" && (
-                      <span style={{ fontSize: 12, color: "var(--success)", fontWeight: "bold" }}>✓ Stage déjà affecté</span>
+                      <span style={{ fontSize: 12, color: "var(--success)", fontWeight: "bold", display: "inline-flex", alignItems: "center", gap: 4 }}>
+                        <CheckCircle size={14} /> Stage déjà affecté
+                      </span>
                     )}
                   </div>
                 </div>
@@ -272,7 +275,7 @@ export default function AffectationsPage() {
                   <div style={{ flex: 1 }}>
                     <p className="dossier-title">{s.titre}</p>
                     <p className="dossier-meta" style={{ marginTop: 4 }}>
-                      Étudiant : <strong>{s.etudiant?.user?.name}</strong> — Entreprise : <strong>{s.entreprise?.raison_sociale}</strong>
+                      Étudiant : <strong>{s.etudiant?.user?.name}</strong>, Entreprise : <strong>{s.entreprise?.raison_sociale}</strong>
                     </p>
                     <p className="dossier-meta" style={{ marginTop: 2 }}>
                       Dates : du {new Date(s.date_debut).toLocaleDateString("fr-FR")} au {new Date(s.date_fin).toLocaleDateString("fr-FR")}
@@ -283,8 +286,8 @@ export default function AffectationsPage() {
                           Encadré par : {s.encadreur.user?.name}
                         </span>
                       ) : (
-                        <span className="badge badge-rejete" style={{ background: "var(--warning-bg)", color: "var(--warning)" }}>
-                          ⚠️ Aucun Enseignant Encadreur assigné
+                        <span className="badge badge-rejete" style={{ background: "var(--warning-bg)", color: "var(--warning)", display: "inline-flex", alignItems: "center", gap: 4 }}>
+                          <AlertTriangle size={13} /> Aucun Enseignant Encadreur assigné
                         </span>
                       )}
                     </div>

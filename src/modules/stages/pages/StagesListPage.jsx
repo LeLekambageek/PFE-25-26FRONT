@@ -48,13 +48,13 @@ function StagesEmptyState({ message, actionText, onAction }) {
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="flex flex-col items-center justify-center text-center py-16 px-4 bg-[#FFFFFF] border border-[#EAEAEF] rounded-2xl shadow-xl max-w-md mx-auto"
+      className="flex flex-col items-center justify-center text-center py-16 px-4 bg-white/5 border border-white/5 rounded-2xl shadow-xl max-w-md mx-auto"
     >
       <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mb-4 text-[#FF0000]">
         <FolderOpen size={32} />
       </div>
-      <h3 className="text-lg font-semibold text-[#0F0F1A] mb-2">Aucun élément trouvé</h3>
-      <p className="text-sm text-gray-500 mb-6 leading-relaxed">
+      <h3 className="text-lg font-semibold text-[var(--ink)] mb-2">Aucun élément trouvé</h3>
+      <p className="text-sm text-[var(--ink-soft)] mb-6 leading-relaxed">
         {message || "Il n'y a aucun enregistrement correspondant à cette section pour le moment."}
       </p>
       {actionText && onAction && (
@@ -237,8 +237,8 @@ export default function StagesListPage() {
       {onglet === "stages" ? (
         <div className="space-y-6">
           <div className="flex flex-col text-left">
-            <h2 className="text-xl font-bold text-[#0F0F1A]">{titleStages}</h2>
-            <p className="text-xs text-gray-500 mt-1">{descStages}</p>
+            <h2 className="text-xl font-bold text-[var(--navy)]">{titleStages}</h2>
+            <p className="text-xs text-[var(--ink-soft)] mt-1">{descStages}</p>
           </div>
 
           {stagesError && (
@@ -268,13 +268,13 @@ export default function StagesListPage() {
                   key={stage.id}
                   variants={cardVariants}
                   whileHover={{ y: -4, scale: 1.01 }}
-                  className={`bg-[#FFFFFF] border border-[#EAEAEF] rounded-2xl p-8 shadow-xl hover:border-red-500/30 hover:shadow-red-500/5 transition-all flex flex-col justify-between`}
+                  className="card p-8 flex flex-col justify-between"
                 >
                   <div>
-                    <div className="flex justify-between items-start gap-4 mb-4 pb-4 border-b border-[#EAEAEF]">
+                    <div className="flex justify-between items-start gap-4 mb-4 pb-4 border-b border-[var(--border)]">
                       <div className="flex items-center gap-2.5">
                         <Briefcase size={20} className="text-[#FF0000]" />
-                        <h3 className="text-lg font-bold text-[#0F0F1A] truncate max-w-[200px] sm:max-w-[300px]" title={stage.titre}>
+                        <h3 className="text-lg font-bold text-[var(--navy)] truncate max-w-[200px] sm:max-w-[300px]" title={stage.titre}>
                           {stage.titre}
                         </h3>
                       </div>
@@ -282,25 +282,25 @@ export default function StagesListPage() {
                     </div>
 
                     <div className="space-y-4 mb-6">
-                      <div className="flex items-center gap-3 text-sm text-gray-600">
-                        <User size={16} className="text-gray-400" />
-                        <span>Étudiant : <strong className="text-[#0F0F1A] font-semibold">{stage.etudiant?.user?.name}</strong></span>
+                      <div className="flex items-center gap-3 text-sm text-[var(--ink-soft)]">
+                        <User size={16} className="text-[var(--ink-muted)]" />
+                        <span>Étudiant : <strong className="text-[var(--ink)] font-semibold">{stage.etudiant?.user?.name}</strong></span>
                       </div>
-                      <div className="flex items-center gap-3 text-sm text-gray-600">
-                        <Building2 size={16} className="text-gray-400" />
-                        <span>Raison sociale : <strong className="text-[#0F0F1A] font-semibold">{stage.entreprise?.raison_sociale}</strong></span>
+                      <div className="flex items-center gap-3 text-sm text-[var(--ink-soft)]">
+                        <Building2 size={16} className="text-[var(--ink-muted)]" />
+                        <span>Raison sociale : <strong className="text-[var(--ink)] font-semibold">{stage.entreprise?.raison_sociale}</strong></span>
                       </div>
                       {stage.date_debut && (
-                        <div className="flex items-center gap-3 text-sm text-gray-600">
-                          <Calendar size={16} className="text-gray-400" />
-                          <span>Période : <span className="text-gray-500">{new Date(stage.date_debut).toLocaleDateString()} - {new Date(stage.date_fin).toLocaleDateString()}</span></span>
+                        <div className="flex items-center gap-3 text-sm text-[var(--ink-soft)]">
+                          <Calendar size={16} className="text-[var(--ink-muted)]" />
+                          <span>Période : <span className="text-[var(--ink-soft)]">{new Date(stage.date_debut).toLocaleDateString()} - {new Date(stage.date_fin).toLocaleDateString()}</span></span>
                         </div>
                       )}
                     </div>
                   </div>
 
                   <div>
-                    <div className="flex flex-col gap-2 pt-4 border-t border-[#EAEAEF]">
+                    <div className="flex flex-col gap-2 pt-4 border-t border-[var(--border)]">
                       {peutValider && stage.statut === "en_attente" && (
                         <button
                           className="btn btn-primary w-full text-xs font-semibold py-2.5"
@@ -314,7 +314,7 @@ export default function StagesListPage() {
                         className={`w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border text-xs font-semibold cursor-pointer transition-colors ${
                           openJournalId === stage.id
                             ? "bg-[#FF0000]/10 border-red-500/20 text-[#FF0000]"
-                            : "bg-[#F8F9FC] border-[#EAEAEF] text-gray-700 hover:bg-[#FF0000]/5 hover:border-[#FF0000]/20"
+                            : "bg-white/5 border-white/5 text-[var(--ink-soft)] hover:bg-[#FF0000]/5 hover:border-[#FF0000]/20"
                         }`}
                         onClick={() => toggleJournal(stage.id)}
                       >
@@ -330,9 +330,9 @@ export default function StagesListPage() {
                           animate={{ height: "auto", opacity: 1, marginTop: 16 }}
                           exit={{ height: 0, opacity: 0, marginTop: 0 }}
                           transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                          className="overflow-hidden bg-[#F8F9FC] border border-[#EAEAEF] rounded-xl p-4 space-y-4"
+                          className="overflow-hidden bg-[var(--surface-raised)] border border-[var(--border)] rounded-xl p-4 space-y-4"
                         >
-                          <h4 className="text-xs font-semibold text-[#0F0F1A] flex items-center gap-1.5">
+                          <h4 className="text-xs font-semibold text-[var(--ink)] flex items-center gap-1.5">
                             <FileText size={13} className="text-[#FF0000]" />
                             Journal de Bord
                           </h4>
@@ -343,7 +343,7 @@ export default function StagesListPage() {
                               placeholder="Nouvelle entrée..."
                               value={nouvelleEntree}
                               onChange={(e) => setNouvelleEntree(e.target.value)}
-                              className="flex-1 px-3 py-1.5 bg-[#FFFFFF] border border-[#EAEAEF] rounded-lg text-xs text-[#0F0F1A] placeholder-gray-400 focus:outline-none focus:border-red-500/50 min-height-0 h-9"
+                              className="flex-1 px-3 py-1.5 bg-[var(--surface)] border border-[var(--border)] rounded-lg text-xs text-[var(--ink)] placeholder-gray-400 focus:outline-none focus:border-red-500/50 min-height-0 h-9"
                               style={{ minHeight: "36px" }}
                             />
                             <button
@@ -367,9 +367,9 @@ export default function StagesListPage() {
                             {!journalLoading && journalEntries.length > 0 && (
                               <div className="space-y-2.5">
                                 {journalEntries.map((entry) => (
-                                  <div key={entry.id} className="bg-[#FFFFFF] border border-[#EAEAEF] rounded-lg p-2.5 space-y-1">
-                                    <p className="text-[11px] text-[#0F0F1A] leading-normal">{entry.contenu}</p>
-                                    <div className="flex justify-between text-[9px] text-gray-400">
+                                  <div key={entry.id} className="bg-[var(--surface)] border border-[var(--border)] rounded-lg p-2.5 space-y-1">
+                                    <p className="text-[11px] text-[var(--ink-soft)] leading-normal">{entry.contenu}</p>
+                                    <div className="flex justify-between text-[9px] text-[var(--ink-muted)]">
                                       <span>Auteur : {entry.auteur?.name}</span>
                                       <span>{new Date(entry.created_at).toLocaleDateString()}</span>
                                     </div>
@@ -391,7 +391,7 @@ export default function StagesListPage() {
         <div className="space-y-6">
           <div className="flex justify-between items-start gap-4">
             <div className="flex flex-col text-left">
-              <h2 className="text-xl font-bold text-[#0F0F1A]">Offres de stage</h2>
+              <h2 className="text-xl font-bold text-[var(--ink)]">Offres de stage</h2>
               <p className="text-xs text-gray-500 mt-1">
                 {estAdmin
                   ? "Publiez des offres et suivez les candidatures reçues."
@@ -404,7 +404,7 @@ export default function StagesListPage() {
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-[#FFFFFF] border border-[#EAEAEF] rounded-2xl p-6 shadow-xl"
+              className="card p-6 shadow-xl"
             >
               <OffreForm onOffreCreated={handleOffreCreated} />
             </motion.div>
@@ -439,50 +439,50 @@ export default function StagesListPage() {
               animate="show"
               className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-8"
             >
-              {offres.map((offre) => {
+               {offres.map((offre) => {
                 const estOuverte = offre.statut === "ouverte";
                 return (
                   <motion.div
                     key={offre.id}
                     variants={cardVariants}
                     whileHover={{ y: -4, scale: 1.01 }}
-                    className="bg-[#FFFFFF] border border-[#EAEAEF] rounded-2xl p-8 shadow-xl hover:border-red-500/30 hover:shadow-red-500/5 transition-all flex flex-col justify-between"
+                    className="card p-8 flex flex-col justify-between"
                   >
                     <div>
-                      <div className="flex justify-between items-start gap-4 mb-4 pb-4 border-b border-[#EAEAEF]">
+                      <div className="flex justify-between items-start gap-4 mb-4 pb-4 border-b border-[var(--border)]">
                         <div className="flex items-center gap-2.5">
                           <BookOpen size={20} className="text-[#FF0000]" />
-                          <h3 className="text-lg font-bold text-[#0F0F1A] truncate max-w-[200px] sm:max-w-[300px]" title={offre.titre}>
+                          <h3 className="text-lg font-bold text-[var(--navy)] truncate max-w-[200px] sm:max-w-[300px]" title={offre.titre}>
                             {offre.titre}
                           </h3>
                         </div>
                         <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase border ${
                           estOuverte
-                            ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-600"
-                            : "bg-red-500/10 border-red-500/20 text-red-600"
+                            ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
+                            : "bg-red-500/10 border-red-500/20 text-red-400"
                         }`}>
                           {offre.statut}
                         </span>
                       </div>
 
                       <div className="space-y-3 mb-4">
-                        <div className="flex items-center gap-3 text-sm text-gray-600">
-                          <Building2 size={16} className="text-gray-400" />
-                          <span>Raison sociale : <strong className="text-[#0F0F1A] font-semibold">{offre.entreprise?.raison_sociale}</strong></span>
+                        <div className="flex items-center gap-3 text-sm text-[var(--ink-soft)]">
+                          <Building2 size={16} className="text-[var(--ink-muted)]" />
+                          <span>Raison sociale : <strong className="text-[var(--ink)] font-semibold">{offre.entreprise?.raison_sociale}</strong></span>
                         </div>
-                        <p className="text-sm text-gray-500 leading-relaxed line-clamp-3">{offre.description}</p>
+                        <p className="text-sm text-[var(--ink-soft)] leading-relaxed line-clamp-3">{offre.description}</p>
                       </div>
 
                       {offre.competences_requises && (
-                        <div className="mb-6 bg-[#F8F9FC] border border-[#EAEAEF] rounded-xl p-3.5">
-                          <p className="text-xs text-gray-500 font-semibold uppercase tracking-wider mb-1">Compétences requises</p>
-                          <p className="text-sm text-[#0F0F1A] line-clamp-2">{offre.competences_requises}</p>
+                        <div className="mb-6 bg-[var(--surface-raised)] border border-[var(--border)] rounded-xl p-3.5">
+                          <p className="text-xs text-[var(--ink-muted)] font-semibold uppercase tracking-wider mb-1">Compétences requises</p>
+                          <p className="text-sm text-[var(--ink-soft)] line-clamp-2">{offre.competences_requises}</p>
                         </div>
                       )}
                     </div>
 
                     <div>
-                      <div className="flex flex-col gap-2 pt-4 border-t border-[#EAEAEF]">
+                      <div className="flex flex-col gap-2 pt-4 border-t border-[var(--border)]">
                         {estEtudiant && estOuverte && candidatureOuverteId !== offre.id && (
                           <button
                             className="btn btn-primary w-full text-xs font-semibold py-2.5"
@@ -510,7 +510,7 @@ export default function StagesListPage() {
                             animate={{ height: "auto", opacity: 1, marginTop: 16 }}
                             exit={{ height: 0, opacity: 0, marginTop: 0 }}
                             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                            className="overflow-hidden bg-[#F8F9FC] border border-[#EAEAEF] rounded-xl p-4"
+                            className="overflow-hidden bg-[var(--surface-raised)] border border-[var(--border)] rounded-xl p-4"
                           >
                             <CandidatureForm
                               offre={offre}

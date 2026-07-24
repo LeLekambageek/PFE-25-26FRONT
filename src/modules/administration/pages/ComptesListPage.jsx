@@ -165,13 +165,13 @@ export default function ComptesListPage() {
 
                   {onglet === "etudiant" && (
                     <p className="dossier-meta" style={{ marginTop: 2 }}>
-                      Filière: {item.filiere} — Niveau: {item.niveau}
+                      Filière : {item.filiere} (Niveau {item.niveau})
                     </p>
                   )}
 
                   {onglet === "enseignant" && (
                     <p className="dossier-meta" style={{ marginTop: 2 }}>
-                      Spécialité: {item.specialite || "Généraliste"} — Capacité d'encadrement: <strong>{item.capacite_encadrement}</strong> étudiants
+                      Spécialité : {item.specialite || "Généraliste"}, Capacité : <strong>{item.capacite_encadrement}</strong> étudiants
                     </p>
                   )}
 
@@ -205,7 +205,7 @@ export default function ComptesListPage() {
                     onClick={() => handleReinitialiserPassword(userId)}
                     title="Changer le mot de passe et notifier l'utilisateur"
                   >
-                    RàZ Identifiants
+                    Réinitialiser
                   </button>
                   <button
                     className="btn btn-danger"

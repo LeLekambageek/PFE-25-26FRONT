@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { administrationApi } from "../../../shared/api/administrationApi";
+import { CheckCircle2, AlertTriangle } from "lucide-react";
 
 const NIVEAUX = ["Licence 1", "Licence 2", "Licence 3", "Master 1", "Master 2"];
 
@@ -149,7 +150,11 @@ export default function CreerCompteModal({ type, account, onClose, onCompteCree 
         className="card"
         style={{ width: 480, maxHeight: "90vh", overflowY: "auto", margin: 20 }}
         onClick={(e) => e.stopPropagation()}
+        autoComplete="off"
       >
+        <input style={{ opacity: 0, position: "absolute", height: 0, width: 0 }} type="text" name="fake_email" />
+        <input style={{ opacity: 0, position: "absolute", height: 0, width: 0 }} type="password" name="fake_password" />
+
         <h2>{titreModal}</h2>
         <p className="dossier-meta" style={{ marginBottom: 20 }}>
           {account 
@@ -159,13 +164,13 @@ export default function CreerCompteModal({ type, account, onClose, onCompteCree 
 
         <div className="form-group">
           <label>Nom complet</label>
-          <input type="text" value={champs.name} onChange={setChamp("name")} required placeholder="Ex: Jean Dupont" />
+          <input type="text" value={champs.name} onChange={setChamp("name")} required placeholder="Ex: Jean Dupont" autoComplete="new-name" />
         </div>
 
         <div className="form-row">
           <div className="form-group">
             <label>Email de connexion</label>
-            <input type="email" value={champs.email} onChange={setChamp("email")} required placeholder="jean.dupont@univ.edu" />
+            <input type="email" value={champs.email} onChange={setChamp("email")} required placeholder="jean.dupont@univ.edu" autoComplete="new-email" />
           </div>
           <div className="form-group">
             <label>{account ? "Nouveau mot de passe" : "Mot de passe initial"}</label>
@@ -176,6 +181,7 @@ export default function CreerCompteModal({ type, account, onClose, onCompteCree 
               minLength={8} 
               required={!account} 
               placeholder={account ? "Laisser vide si inchangé" : "Min. 8 caractères"} 
+              autoComplete="new-password"
             />
           </div>
         </div>
@@ -206,7 +212,9 @@ export default function CreerCompteModal({ type, account, onClose, onCompteCree 
                 ))}
               </select>
             </div>
-            <p className="dossier-meta" style={{ color: "var(--success)" }}>✓ Les comptes étudiants sont permanents et n'expirent jamais.</p>
+            <p className="dossier-meta" style={{ color: "var(--success)", display: "flex", alignItems: "center", gap: 6 }}>
+              <CheckCircle2 size={14} /> Les comptes étudiants sont permanents et n'expirent jamais.
+            </p>
           </>
         )}
 
@@ -222,7 +230,9 @@ export default function CreerCompteModal({ type, account, onClose, onCompteCree 
                 <input type="number" min="1" max="25" value={champs.capacite_encadrement} onChange={setChamp("capacite_encadrement")} required />
               </div>
             </div>
-            <p className="dossier-meta" style={{ color: "var(--success)" }}>✓ Les comptes enseignants/encadreurs sont permanents et n'expirent jamais.</p>
+            <p className="dossier-meta" style={{ color: "var(--success)", display: "flex", alignItems: "center", gap: 6 }}>
+              <CheckCircle2 size={14} /> Les comptes enseignants/encadreurs sont permanents et n'expirent jamais.
+            </p>
           </>
         )}
 
@@ -238,7 +248,9 @@ export default function CreerCompteModal({ type, account, onClose, onCompteCree 
                 <input type="date" value={champs.date_fin_acces} onChange={setChamp("date_fin_acces")} />
               </div>
             </div>
-            <p className="dossier-meta" style={{ color: "var(--warning)" }}>⚠️ Le compte jury possède une validité limitée dans le temps et expirera automatiquement à la date de fin.</p>
+            <p className="dossier-meta" style={{ color: "var(--warning)", display: "flex", alignItems: "center", gap: 6 }}>
+              <AlertTriangle size={14} /> Le compte jury possède une validité limitée dans le temps et expirera automatiquement à la date de fin.
+            </p>
           </>
         )}
 

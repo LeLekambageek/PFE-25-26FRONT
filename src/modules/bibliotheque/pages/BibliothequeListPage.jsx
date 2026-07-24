@@ -202,9 +202,9 @@ export default function BibliothequeListPage() {
           ) : (
             <>
               <p className="dossier-meta">
-                {doc.auteur && <>Auteur : {doc.auteur} · </>}
-                {doc.annee && <>Année : {doc.annee} · </>}
-                {doc.mention && <>Mention : {doc.mention} · </>}
+                {doc.auteur && <>Auteur : {doc.auteur}, </>}
+                {doc.annee && <>Année : {doc.annee}, </>}
+                {doc.mention && <>Mention : {doc.mention}, </>}
                 {doc.mots_cles && <>Mots-clés : {doc.mots_cles}</>}
               </p>
 

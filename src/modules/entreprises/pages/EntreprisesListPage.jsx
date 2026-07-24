@@ -97,10 +97,10 @@ export default function EntreprisesListPage() {
             <p className="dossier-title">{entreprise.raison_sociale}</p>
             <p className="dossier-meta">
               {entreprise.secteur_activite || "Secteur non renseigné"}
-              {" — "}
-              {entreprise.contact_nom || "Aucun contact renseigné"}
+              {", Contact : "}
+              {entreprise.contact_nom || "Aucun contact"}
               {entreprise.contact_email ? ` (${entreprise.contact_email})` : ""}
-              {entreprise.contact_telephone ? ` — ${entreprise.contact_telephone}` : ""}
+              {entreprise.contact_telephone ? `, Tél : ${entreprise.contact_telephone}` : ""}
             </p>
 
             <span className="badge badge-en_cours">
