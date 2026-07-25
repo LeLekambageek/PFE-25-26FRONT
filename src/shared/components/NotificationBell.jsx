@@ -97,28 +97,28 @@ export default function NotificationBell() {
               )}
             </div>
 
-            <div className="max-h-80 overflow-y-auto divide-y divide-[#475569]">
+            <div className="max-h-80 overflow-y-auto divide-y divide-slate-800/80 custom-scrollbar">
               {notifications.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-8 text-center text-white/70 gap-2">
-                  <BellOff size={24} className="text-white/60" />
-                  <p className="text-xs">Aucune notification non lue</p>
+                <div className="flex flex-col items-center justify-center py-8 text-center text-slate-400 gap-2">
+                  <BellOff size={24} className="text-slate-500" />
+                  <p className="text-xs font-medium">Aucune notification non lue</p>
                 </div>
               ) : (
                 notifications.map((notification) => (
                   <div
                     key={notification.id}
-                    className="p-3.5 hover:bg-slate-800/80 cursor-pointer transition-colors flex items-start gap-3 group"
+                    className="p-3.5 hover:bg-slate-800/60 cursor-pointer transition-colors flex items-start gap-3 group"
                     onClick={() => handleMarkAsRead(notification.id)}
                   >
-                    <span className="w-2 h-2 mt-1.5 rounded-full bg-[#FF0000] group-hover:scale-125 transition-transform flex-shrink-0" />
+                    <div className="w-2 h-2 mt-1.5 rounded-full bg-red-500 shrink-0 group-hover:scale-110 transition-transform" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs font-semibold text-white truncate">{notification.titre}</p>
-                      <p className="text-[11px] text-white/70 mt-1 line-clamp-2 leading-relaxed">
+                      <p className="text-xs font-bold text-white truncate">{notification.titre}</p>
+                      <p className="text-xs text-slate-300 mt-1 line-clamp-2 leading-snug">
                         {notification.message}
                       </p>
-                      <p className="text-[10px] text-white/50 mt-2">
+                      <span className="text-[10px] font-semibold text-slate-400 mt-1.5 block">
                         {new Date(notification.date_creation).toLocaleString("fr-FR")}
-                      </p>
+                      </span>
                     </div>
                   </div>
                 ))
