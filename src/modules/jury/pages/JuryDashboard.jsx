@@ -333,29 +333,29 @@ export default function JuryDashboard() {
               {/* Evaluation Form Grid */}
               <div className="space-y-6">
                 {CRITERES.map((c) => (
-                  <div key={c.key} className="space-y-3 pb-5 border-b border-[var(--border)] last:border-0 last:pb-0">
-                    <div className="flex justify-between items-center">
-                      <label className="text-sm font-bold text-[var(--ink)]">{c.label}</label>
-                      <div className="flex items-center gap-2">
+                  <div key={c.key} className="space-y-3 pb-5 border-b border-slate-800 last:border-0 last:pb-0">
+                    <div className="flex justify-between items-center gap-4">
+                      <label className="text-base font-bold text-white leading-snug">{c.label}</label>
+                      <div className="flex items-center gap-2 shrink-0">
                         <input
                           type="number"
                           min="0"
                           max="20"
                           step="0.5"
-                          className="w-16 text-center border-2 border-[var(--border)] bg-[var(--surface)] text-[var(--ink)] rounded-lg px-2 py-1 text-sm font-extrabold focus:border-red-500"
+                          className="w-24 text-center border-2 border-slate-700 bg-slate-900 text-white rounded-xl px-3 py-2 text-base font-extrabold focus:border-red-500 focus:bg-slate-950 focus:outline-none transition-all shadow-inner"
                           value={notes[c.key].note}
                           onChange={(e) => setNoteField(c.key, "note", e.target.value)}
                           disabled={estLectureSeule}
                           required
                         />
-                        <span className="text-xs text-[var(--ink-muted)] font-semibold">/ 20</span>
+                        <span className="text-sm font-bold text-slate-300 bg-slate-800/80 px-2.5 py-2 rounded-xl border border-slate-700">/ 20</span>
                       </div>
                     </div>
-                    <p className="text-xs text-[var(--ink-muted)] leading-normal">{c.desc}</p>
-                    <input
-                      type="text"
-                      placeholder="Commentaires ou points forts/faibles..."
-                      className="w-full text-xs"
+                    <p className="text-xs text-slate-400 font-medium leading-normal">{c.desc}</p>
+                    <textarea
+                      rows={2}
+                      placeholder="Commentaires, appréciations ou remarques particulières du jury..."
+                      className="w-full text-sm font-medium text-white bg-slate-900 border-2 border-slate-700 rounded-xl p-3 placeholder-slate-400 focus:border-red-500 focus:ring-2 focus:ring-red-500/20 focus:outline-none transition-all"
                       value={notes[c.key].commentaire}
                       onChange={(e) => setNoteField(c.key, "commentaire", e.target.value)}
                       disabled={estLectureSeule}
