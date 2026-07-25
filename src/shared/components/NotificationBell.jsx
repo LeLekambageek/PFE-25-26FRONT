@@ -89,10 +89,9 @@ export default function NotificationBell() {
               {notifications.length > 0 && (
                 <button
                   onClick={handleMarkAllAsRead}
-                  className="text-xs text-[#FF0000] hover:text-[#D50048] font-medium flex items-center gap-1 cursor-pointer transition-colors"
+                  className="text-xs text-[#FF0000] hover:text-[#D50048] font-medium cursor-pointer transition-colors"
                 >
-                  <Check size={14} />
-                  Tout marquer comme lu
+                  Marquer tout comme lu
                 </button>
               )}
             </div>
