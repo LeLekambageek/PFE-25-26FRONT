@@ -321,32 +321,32 @@ export default function MemoiresListPage() {
                         </p>
                       )}
 
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 12 }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 12, flexWrap: "wrap", gap: 10 }}>
                         <div>
                           {m.statut === "soutenu" ? (
-                            <span className="badge badge-valide" style={{ background: "var(--success-bg)", color: "var(--success)", fontSize: 11, display: "inline-flex", alignItems: "center", gap: 4 }}>
-                              <Check size={13} /> Terminé
+                            <span className="px-3 py-1.5 rounded-lg border text-xs font-semibold bg-emerald-500/10 text-emerald-400 border-emerald-500/20 inline-flex items-center gap-1.5">
+                              <Check size={14} /> Soutenu et validé
                             </span>
                           ) : m.eligible_soutenance ? (
-                            <span className="badge badge-valide" style={{ background: "var(--success-bg)", color: "var(--success)", fontSize: 11, display: "inline-flex", alignItems: "center", gap: 4 }}>
-                              <CheckCircle2 size={13} /> Éligible Soutenance
+                            <span className="px-3 py-1.5 rounded-lg border text-xs font-semibold bg-emerald-500/10 text-emerald-400 border-emerald-500/20 inline-flex items-center gap-1.5">
+                              <CheckCircle2 size={14} /> Autorisé en soutenance
                             </span>
                           ) : (
-                            <span className="badge badge-en_cours" style={{ background: "var(--warning-bg)", color: "var(--warning)", fontSize: 11 }}>
-                              Avancement en cours
+                            <span className="px-3 py-1.5 rounded-lg border text-xs font-semibold bg-amber-500/10 text-amber-400 border-amber-500/20 inline-flex items-center gap-1.5">
+                              <Clock size={14} /> Rédaction en cours
                             </span>
                           )}
                         </div>
 
-                        <div className="actions-row" style={{ margin: 0 }}>
+                        <div className="actions-row" style={{ margin: 0, width: "auto" }}>
                           {(estEncadreur || estEtudiant) && (
-                            <button className="btn btn-primary" style={{ minHeight: 32, fontSize: 12, display: "inline-flex", alignItems: "center", gap: 4 }} onClick={() => handleSelectMemoire(m)}>
-                              Suivi & Progression <ArrowRight size={14} />
+                            <button className="btn btn-primary" style={{ minHeight: 34, fontSize: 13, display: "inline-flex", alignItems: "center", gap: 6 }} onClick={() => handleSelectMemoire(m)}>
+                              Consulter le dossier <ArrowRight size={14} />
                             </button>
                           )}
                           {estAdmin && (
-                            <button className="btn" style={{ minHeight: 32, fontSize: 12, display: "inline-flex", alignItems: "center", gap: 4 }} onClick={() => handleSelectMemoire(m)}>
-                              Détails versions <ArrowRight size={14} />
+                            <button className="btn" style={{ minHeight: 34, fontSize: 13, display: "inline-flex", alignItems: "center", gap: 6 }} onClick={() => handleSelectMemoire(m)}>
+                              Examiner les versions <ArrowRight size={14} />
                             </button>
                           )}
                         </div>
@@ -354,29 +354,29 @@ export default function MemoiresListPage() {
 
                       {/* Admin validation & supervisor assignments */}
                       {editingId === m.id ? (
-                        <div className="inline-edit" style={{ marginTop: 10, background: "var(--surface)", padding: 8, borderRadius: 6 }}>
+                        <div className="inline-edit" style={{ marginTop: 12, background: "var(--surface-raised)", padding: 12, borderRadius: 8, border: "1px solid var(--border)" }}>
                           <select value={selectedEnseignant} onChange={(e) => setSelectedEnseignant(e.target.value)}>
-                            <option value="">-- Choisir un encadreur --</option>
+                            <option value="">-- Sélectionner un encadreur --</option>
                             {enseignants.map((ens) => (
                               <option key={ens.enseignant_id} value={ens.id}>
                                 {ens.nom} ({ens.specialite})
                               </option>
                             ))}
                           </select>
-                          <button className="btn btn-primary" onClick={() => confirmerAffectation(m.id)}>Confirmer</button>
+                          <button className="btn btn-primary" onClick={() => confirmerAffectation(m.id)}>Confirmer l'affectation</button>
                           <button className="btn btn-ghost" onClick={annulerAffectation}>Annuler</button>
                         </div>
                       ) : (
                         (peutValiderSujet || (estAdmin && m.statut === "valide")) && (
-                          <div className="actions-row" style={{ marginTop: 10, borderTop: "1px solid var(--border)", paddingTop: 8 }}>
+                          <div className="actions-row" style={{ marginTop: 12, borderTop: "1px solid var(--border)", paddingTop: 10 }}>
                             {m.statut === "propose" && peutValiderSujet && (
                               <>
-                                <button className="btn btn-primary" style={{ minHeight: 30, fontSize: 12 }} onClick={() => handleValider(m.id)}>Valider Sujet</button>
-                                <button className="btn btn-danger" style={{ minHeight: 30, fontSize: 12 }} onClick={() => handleRejeter(m.id)}>Rejeter</button>
+                                <button className="btn btn-primary" style={{ minHeight: 34, fontSize: 13 }} onClick={() => handleValider(m.id)}>Approuver le sujet</button>
+                                <button className="btn btn-danger" style={{ minHeight: 34, fontSize: 13 }} onClick={() => handleRejeter(m.id)}>Refuser le sujet</button>
                               </>
                             )}
                             {m.statut === "valide" && estAdmin && (
-                              <button className="btn" style={{ minHeight: 30, fontSize: 12 }} onClick={() => ouvrirAffectation(m.id)}>Affecter un encadreur</button>
+                              <button className="btn" style={{ minHeight: 34, fontSize: 13 }} onClick={() => ouvrirAffectation(m.id)}>Attribuer un encadreur</button>
                             )}
                           </div>
                         )

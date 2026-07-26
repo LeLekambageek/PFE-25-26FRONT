@@ -1,16 +1,16 @@
 const LABELS = {
-  en_attente: "En attente",
-  propose: "Proposé",
-  valide: "Validé",
-  valide_final: "Validé (final)",
-  rejete: "Rejeté",
-  actif: "Actif",
-  en_cours: "En cours",
-  termine: "Terminé",
-  terminee: "Terminée",
-  planifiee: "Planifiée",
+  en_attente: "En attente de validation",
+  propose: "Sujet soumis",
+  valide: "Sujet approuvé",
+  valide_final: "Mémoire finalisé",
+  rejete: "Non retenu",
+  actif: "En cours",
+  en_cours: "En cours de rédaction",
+  termine: "Soutenu et clôturé",
+  terminee: "Soutenance terminée",
+  planifiee: "Soutenance programmée",
   brouillon: "Brouillon",
-  soutenu: "Terminé",
+  soutenu: "Soutenu",
 };
 
 export default function StatusBadge({ statut }) {
