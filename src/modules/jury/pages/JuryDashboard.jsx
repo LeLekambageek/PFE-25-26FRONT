@@ -26,20 +26,20 @@ export default function JuryDashboard() {
   const [notesValidees, setNotesValidees] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    fetchSoutenances();
-  }, []);
+  // Incrémenté pour recharger la liste après validation des notes
+  const [rechargement, setRechargement] = useState(0);
 
-  const fetchSoutenances = async () => {
+  useEffect(() => {
+    juryApi
+      .getMesSoutenances()
+      .then((response) => setSoutenances(response.data || []))
+      .catch(() => setError("Impossible de charger vos soutenances assignées."))
+      .finally(() => setLoading(false));
+  }, [rechargement]);
+
+  const fetchSoutenances = () => {
     setLoading(true);
-    try {
-      const response = await juryApi.getMesSoutenances();
-      setSoutenances(response.data || []);
-    } catch (err) {
-      setError("Impossible de charger vos soutenances assignées.");
-    } finally {
-      setLoading(false);
-    }
+    setRechargement((n) => n + 1);
   };
 
   const handleSelectSoutenance = async (s) => {
@@ -73,7 +73,7 @@ export default function JuryDashboard() {
         });
       }
       setNotes(initNotes);
-    } catch (err) {
+    } catch {
       alert("Erreur lors de la récupération des détails de la soutenance.");
     } finally {
       setLoading(false);
@@ -90,7 +90,7 @@ export default function JuryDashboard() {
       document.body.appendChild(link);
       link.click();
       link.remove();
-    } catch (err) {
+    } catch {
       alert("Erreur lors du téléchargement du mémoire. Vérifiez qu'un fichier a été déposé.");
     }
   };

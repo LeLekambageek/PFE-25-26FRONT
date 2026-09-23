@@ -12,31 +12,29 @@ export default function EtudiantDashboard() {
   const [resultats, setResultats] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Incrémenté pour recharger le tableau de bord après une action
+  const [rechargement, setRechargement] = useState(0);
+
   useEffect(() => {
-    fetchData();
-  }, []);
+    Promise.all([
+      etudiantApi.getMonStageActif().catch(() => ({ data: null })),
+      etudiantApi.getMesMemoires(),
+      etudiantApi.getMesCandidatures(),
+      creneauxApi.getCreneauxDisponiblesPourMoi().catch(() => ({ data: [] })),
+      etudiantApi.getResultatsSoutenance().catch(() => ({ data: null })),
+    ])
+      .then(([stageRes, memoiresRes, candidaturesRes, creneauxRes, resultatsRes]) => {
+        setStageActif(stageRes.data);
+        setMemoires(memoiresRes.data);
+        setCandidatures(candidaturesRes.data);
+        setCreneauxDisponibles(creneauxRes.data);
+        setResultats(resultatsRes.data);
+      })
+      .catch((error) => console.error("Error fetching data:", error))
+      .finally(() => setLoading(false));
+  }, [rechargement]);
 
-  const fetchData = async () => {
-    try {
-      const [stageRes, memoiresRes, candidaturesRes, creneauxRes, resultatsRes] = await Promise.all([
-        etudiantApi.getMonStageActif().catch(() => ({ data: null })),
-        etudiantApi.getMesMemoires(),
-        etudiantApi.getMesCandidatures(),
-        creneauxApi.getCreneauxDisponiblesPourMoi().catch(() => ({ data: [] })),
-        etudiantApi.getResultatsSoutenance().catch(() => ({ data: null })),
-      ]);
-
-      setStageActif(stageRes.data);
-      setMemoires(memoiresRes.data);
-      setCandidatures(candidaturesRes.data);
-      setCreneauxDisponibles(creneauxRes.data);
-      setResultats(resultatsRes.data);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const fetchData = () => setRechargement((n) => n + 1);
 
   const handleReserverCreneau = async (creneauId) => {
     try {

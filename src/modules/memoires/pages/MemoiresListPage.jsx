@@ -42,22 +42,30 @@ export default function MemoiresListPage() {
   const estEncadreur = user?.roles?.some((r) => r.name === "enseignant_encadreur");
   const estEtudiant = user?.roles?.some((r) => r.name === "etudiant");
 
-  const chargerMemoires = () => {
-    setLoading(true);
-    setError(null);
-    apiClient
-      .get("/memoires")
-      .then(({ data }) => setMemoires(data.data || data))
-      .catch(() => setError("Impossible de charger les mémoires."))
-      .finally(() => setLoading(false));
-  };
+  // Incrémenté pour recharger la liste après une action
+  const [rechargement, setRechargement] = useState(0);
 
   useEffect(() => {
-    chargerMemoires();
+    apiClient
+      .get("/memoires")
+      .then(({ data }) => {
+        setMemoires(data.data || data);
+        setError(null);
+      })
+      .catch(() => setError("Impossible de charger les mémoires."))
+      .finally(() => setLoading(false));
+  }, [rechargement]);
+
+  useEffect(() => {
     if (estAdmin) {
       apiClient.get("/annuaire/enseignants").then(({ data }) => setEnseignants(data)).catch(() => {});
     }
-  }, []);
+  }, [estAdmin]);
+
+  const chargerMemoires = () => {
+    setLoading(true);
+    setRechargement((n) => n + 1);
+  };
 
   const handleMemoireCreated = (nouveau) => {
     setMemoires((prev) => [nouveau, ...prev]);
@@ -120,7 +128,7 @@ export default function MemoiresListPage() {
     try {
       const { data } = await apiClient.get(`/memoires/${m.id}/versions`);
       setVersions(data);
-    } catch (err) {
+    } catch {
       alert("Impossible de charger les versions du mémoire.");
     } finally {
       setVersionsLoading(false);
@@ -148,7 +156,7 @@ export default function MemoiresListPage() {
       document.body.appendChild(link);
       link.click();
       link.remove();
-    } catch (err) {
+    } catch {
       alert("Erreur lors du téléchargement du document.");
     }
   };

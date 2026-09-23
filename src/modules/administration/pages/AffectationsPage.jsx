@@ -38,36 +38,50 @@ export default function AffectationsPage() {
   const [selectedEncadreurId, setSelectedEncadreurId] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    chargerDonnees();
-  }, [onglet]);
+  // Incrémenté pour forcer un rechargement après une action
+  const [rechargement, setRechargement] = useState(0);
 
-  const chargerDonnees = async () => {
+  useEffect(() => {
+    let obsolete = false;
+    const requete =
+      onglet === "candidatures"
+        ? Promise.all([
+            administrationApi.getCandidatures(),
+            administrationApi.getEntreprises(),
+            apiClient.get("/annuaire/etudiants").catch(() => ({ data: [] })),
+          ]).then(([candidaturesRes, entreprisesRes, etudiantsRes]) => {
+            if (obsolete) return;
+            setCandidatures(candidaturesRes.data?.data || candidaturesRes.data || []);
+            setEntreprises(entreprisesRes.data || []);
+            setEtudiantsAnnuaire(etudiantsRes.data || []);
+          })
+        : Promise.all([apiClient.get("/stages"), administrationApi.getComptesEnseignants()]).then(
+            ([stagesRes, enseignantsRes]) => {
+              if (obsolete) return;
+              setStages(stagesRes.data?.data || stagesRes.data || []);
+              setEnseignants(enseignantsRes.data?.data || enseignantsRes.data || []);
+            }
+          );
+
+    requete
+      .then(() => !obsolete && setError(null))
+      .catch(() => !obsolete && setError("Erreur lors de la récupération des données."))
+      .finally(() => !obsolete && setLoading(false));
+
+    return () => {
+      obsolete = true;
+    };
+  }, [onglet, rechargement]);
+
+  const chargerDonnees = () => {
     setLoading(true);
-    setError(null);
-    try {
-      if (onglet === "candidatures") {
-        const [candidaturesRes, entreprisesRes, etudiantsRes] = await Promise.all([
-          administrationApi.getCandidatures(),
-          administrationApi.getEntreprises(),
-          apiClient.get("/annuaire/etudiants").catch(() => ({ data: [] })),
-        ]);
-        setCandidatures(candidaturesRes.data?.data || candidaturesRes.data || []);
-        setEntreprises(entreprisesRes.data || []);
-        setEtudiantsAnnuaire(etudiantsRes.data || []);
-      } else {
-        const [stagesRes, enseignantsRes] = await Promise.all([
-          apiClient.get("/stages"),
-          administrationApi.getComptesEnseignants(),
-        ]);
-        setStages(stagesRes.data?.data || stagesRes.data || []);
-        setEnseignants(enseignantsRes.data?.data || enseignantsRes.data || []);
-      }
-    } catch (err) {
-      setError("Erreur lors de la récupération des données.");
-    } finally {
-      setLoading(false);
-    }
+    setRechargement((n) => n + 1);
+  };
+
+  const changerOnglet = (nouvelOnglet) => {
+    if (nouvelOnglet === onglet) return;
+    setOnglet(nouvelOnglet);
+    setLoading(true);
   };
 
   const handleTraiterCandidature = async (id, nouveauStatut) => {
@@ -165,13 +179,13 @@ export default function AffectationsPage() {
       <div className="tabs" style={{ display: "flex", gap: 10, borderBottom: "2px solid var(--border)", marginBottom: 24, paddingBottom: 8 }}>
         <button
           className={`btn ${onglet === "candidatures" ? "btn-primary" : "btn-ghost"}`}
-          onClick={() => setOnglet("candidatures")}
+          onClick={() => changerOnglet("candidatures")}
         >
           1. Candidatures & Affectation de Stage
         </button>
         <button
           className={`btn ${onglet === "encadreurs" ? "btn-primary" : "btn-ghost"}`}
-          onClick={() => setOnglet("encadreurs")}
+          onClick={() => changerOnglet("encadreurs")}
         >
           2. Attribution d'Encadreurs
         </button>

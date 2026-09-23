@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { administrationApi } from "../../../shared/api/administrationApi";
 import apiClient from "../../../shared/api/apiClient";
-import NotificationBell from "../../../shared/components/NotificationBell";
 
 export default function AdministrationDashboard() {
   const navigate = useNavigate();
@@ -16,30 +15,21 @@ export default function AdministrationDashboard() {
   const [tauxEncadrement, setTauxEncadrement] = useState([]);
 
   useEffect(() => {
-    fetchStats();
+    Promise.all([
+      administrationApi.getDashboardApercu().catch(() => ({ data: null })),
+      administrationApi.getDashboardGraphiques().catch(() => ({ data: null })),
+      administrationApi.getDashboardDelais().catch(() => ({ data: null })),
+      administrationApi.getDashboardTauxEncadrement().catch(() => ({ data: [] })),
+    ])
+      .then(([apercuRes, graphRes, delaisRes, tauxRes]) => {
+        setApercu(apercuRes.data);
+        setGraphiques(graphRes.data);
+        setDelais(delaisRes.data);
+        setTauxEncadrement(tauxRes.data);
+      })
+      .catch(() => setError("Certains indicateurs du tableau de bord n'ont pas pu être chargés."))
+      .finally(() => setLoading(false));
   }, []);
-
-  const fetchStats = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const [apercuRes, graphRes, delaisRes, tauxRes] = await Promise.all([
-        administrationApi.getDashboardApercu().catch(() => ({ data: null })),
-        administrationApi.getDashboardGraphiques().catch(() => ({ data: null })),
-        administrationApi.getDashboardDelais().catch(() => ({ data: null })),
-        administrationApi.getDashboardTauxEncadrement().catch(() => ({ data: [] })),
-      ]);
-
-      setApercu(apercuRes.data);
-      setGraphiques(graphRes.data);
-      setDelais(delaisRes.data);
-      setTauxEncadrement(tauxRes.data);
-    } catch (err) {
-      setError("Certains indicateurs du tableau de bord n'ont pas pu être chargés.");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const getExportUrl = (type) => {
     return `${apiClient.defaults.baseURL}/dashboard/export/${type}`;

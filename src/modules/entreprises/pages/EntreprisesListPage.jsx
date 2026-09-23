@@ -12,17 +12,12 @@ export default function EntreprisesListPage() {
   const [editingId, setEditingId] = useState(null);
   const [suppressionId, setSuppressionId] = useState(null);
 
-  const chargerEntreprises = () => {
-    setLoading(true);
+  useEffect(() => {
     apiClient
       .get("/entreprises")
       .then(({ data }) => setEntreprises(data))
       .catch(() => setError("Impossible de charger les entreprises."))
       .finally(() => setLoading(false));
-  };
-
-  useEffect(() => {
-    chargerEntreprises();
   }, []);
 
   const handleCreee = (nouvelle) => {

@@ -25,18 +25,25 @@ export default function BibliothequeListPage() {
 
   const peutGerer = hasRole("administration");
 
-  const chargerDocuments = (params = {}) => {
-    setLoading(true);
-    bibliothequeApi
-      .getDocuments(params)
-      .then(({ data }) => setDocuments(data.data))
-      .catch(() => setError("Impossible de charger la bibliothèque."))
-      .finally(() => setLoading(false));
-  };
+  // Filtres appliqués : un nouvel objet relance le chargement (même à valeurs égales)
+  const [filtresAppliques, setFiltresAppliques] = useState({});
 
   useEffect(() => {
-    chargerDocuments();
-  }, []);
+    let obsolete = false;
+    bibliothequeApi
+      .getDocuments(filtresAppliques)
+      .then(({ data }) => !obsolete && setDocuments(data.data))
+      .catch(() => !obsolete && setError("Impossible de charger la bibliothèque."))
+      .finally(() => !obsolete && setLoading(false));
+    return () => {
+      obsolete = true;
+    };
+  }, [filtresAppliques]);
+
+  const chargerDocuments = (params = {}) => {
+    setLoading(true);
+    setFiltresAppliques(params);
+  };
 
   const handleFiltrer = (e) => {
     e.preventDefault();

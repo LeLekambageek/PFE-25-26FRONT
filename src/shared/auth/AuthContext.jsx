@@ -5,14 +5,11 @@ const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // Chargement initial uniquement s'il y a un token à vérifier
+  const [loading, setLoading] = useState(() => Boolean(localStorage.getItem("api_token")));
 
   useEffect(() => {
-    const token = localStorage.getItem("api_token");
-    if (!token) {
-      setLoading(false);
-      return;
-    }
+    if (!localStorage.getItem("api_token")) return;
 
     apiClient
       .get("/me")
@@ -42,18 +39,27 @@ export function AuthProvider({ children }) {
     setUser(null);
   }, []);
 
+  // Recharge l'utilisateur (ex. après changement de mot de passe : must_change_password repasse à false)
+  const refreshUser = useCallback(async () => {
+    const { data } = await apiClient.get("/me");
+    setUser(data);
+    return data;
+  }, []);
+
   const hasRole = useCallback(
     (role) => user?.roles?.some((r) => r.name === role) ?? false,
     [user]
   );
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, hasRole }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, hasRole, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );
 }
 
+// Hook exporté avec le Provider par convention (import unique depuis AuthContext)
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error("useAuth doit être utilisé dans un AuthProvider");

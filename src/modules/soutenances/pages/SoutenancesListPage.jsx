@@ -6,7 +6,7 @@ import SoutenanceForm from "../components/SoutenanceForm";
 import StatusBadge from "../../../shared/components/StatusBadge";
 
 export default function SoutenancesListPage() {
-  const { user, hasRole } = useAuth();
+  const { hasRole } = useAuth();
   const [onglet, setOnglet] = useState("soutenances"); // soutenances, creneaux
   const [soutenances, setSoutenances] = useState([]);
   const [creneaux, setCreneaux] = useState([]);
@@ -33,30 +33,44 @@ export default function SoutenancesListPage() {
 
   const estAdmin = hasRole("administration");
 
-  useEffect(() => {
-    chargerDonnees();
-  }, [onglet]);
+  // Incrémenté pour recharger après une action
+  const [rechargement, setRechargement] = useState(0);
 
-  const chargerDonnees = async () => {
+  useEffect(() => {
+    let obsolete = false;
+    const requete =
+      onglet === "soutenances"
+        ? Promise.all([
+            apiClient.get("/soutenances"),
+            estAdmin ? administrationApi.getComptesJury() : Promise.resolve(null),
+          ]).then(([res, juresRes]) => {
+            if (obsolete) return;
+            setSoutenances(res.data.data || res.data || []);
+            if (juresRes) setJures(juresRes.data?.data || juresRes.data || []);
+          })
+        : administrationApi.getCreneauxSoutenance().then((res) => {
+            if (!obsolete) setCreneaux(res.data.data || res.data || []);
+          });
+
+    requete
+      .then(() => !obsolete && setError(null))
+      .catch(() => !obsolete && setError("Erreur lors du chargement des informations."))
+      .finally(() => !obsolete && setLoading(false));
+
+    return () => {
+      obsolete = true;
+    };
+  }, [onglet, estAdmin, rechargement]);
+
+  const chargerDonnees = () => {
     setLoading(true);
-    setError(null);
-    try {
-      if (onglet === "soutenances") {
-        const res = await apiClient.get("/soutenances");
-        setSoutenances(res.data.data || res.data || []);
-        if (estAdmin) {
-          const juresRes = await administrationApi.getComptesJury();
-          setJures(juresRes.data?.data || juresRes.data || []);
-        }
-      } else {
-        const res = await administrationApi.getCreneauxSoutenance();
-        setCreneaux(res.data.data || res.data || []);
-      }
-    } catch (err) {
-      setError("Erreur lors du chargement des informations.");
-    } finally {
-      setLoading(false);
-    }
+    setRechargement((n) => n + 1);
+  };
+
+  const changerOnglet = (nouvelOnglet) => {
+    if (nouvelOnglet === onglet) return;
+    setOnglet(nouvelOnglet);
+    setLoading(true);
   };
 
   const handleSoutenanceCreated = (nouvelle) => {
@@ -175,14 +189,14 @@ export default function SoutenancesListPage() {
       <div className="tabs" style={{ display: "flex", gap: 10, borderBottom: "2px solid var(--border)", marginBottom: 24, paddingBottom: 8 }}>
         <button
           className={`btn ${onglet === "soutenances" ? "btn-primary" : "btn-ghost"}`}
-          onClick={() => setOnglet("soutenances")}
+          onClick={() => changerOnglet("soutenances")}
         >
           Soutenances Planifiées
         </button>
         {estAdmin && (
           <button
             className={`btn ${onglet === "creneaux" ? "btn-primary" : "btn-ghost"}`}
-            onClick={() => setOnglet("creneaux")}
+            onClick={() => changerOnglet("creneaux")}
           >
             Créneaux & Réservations
           </button>

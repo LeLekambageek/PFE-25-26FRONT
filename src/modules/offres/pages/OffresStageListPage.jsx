@@ -15,17 +15,12 @@ export default function OffresStageListPage() {
   const estAdmin = user?.roles?.some((r) => r.name === "administration");
   const estEtudiant = user?.roles?.some((r) => r.name === "etudiant");
 
-  const chargerOffres = () => {
-    setLoading(true);
+  useEffect(() => {
     offresStageApi
       .getOffres()
       .then(({ data }) => setOffres(data.data ?? data))
       .catch(() => setError("Impossible de charger les offres de stage."))
       .finally(() => setLoading(false));
-  };
-
-  useEffect(() => {
-    chargerOffres();
   }, []);
 
   const handleOffreCreated = (nouvelle) => {

@@ -3,25 +3,24 @@ import { notificationsApi } from "../api/notificationsApi";
 import { Bell, Check, BellOff } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
+const chargerNombreNonLues = (setUnreadCount) =>
+  notificationsApi
+    .getUnreadCount()
+    .then((response) => setUnreadCount(response.data.count))
+    .catch((error) => console.error("Error fetching unread count:", error));
+
 export default function NotificationBell() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [notifications, setNotifications] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
 
+  const fetchUnreadCount = () => chargerNombreNonLues(setUnreadCount);
+
   useEffect(() => {
-    fetchUnreadCount();
-    const interval = setInterval(fetchUnreadCount, 30000); // Refresh every 30s
+    chargerNombreNonLues(setUnreadCount);
+    const interval = setInterval(() => chargerNombreNonLues(setUnreadCount), 30000); // Refresh every 30s
     return () => clearInterval(interval);
   }, []);
-
-  const fetchUnreadCount = async () => {
-    try {
-      const response = await notificationsApi.getUnreadCount();
-      setUnreadCount(response.data.count);
-    } catch (error) {
-      console.error("Error fetching unread count:", error);
-    }
-  };
 
   const fetchNotifications = async () => {
     try {

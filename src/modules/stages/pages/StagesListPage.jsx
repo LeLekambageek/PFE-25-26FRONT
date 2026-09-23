@@ -92,33 +92,28 @@ export default function StagesListPage() {
   const estEtudiant = user?.roles?.some((r) => r.name === "etudiant");
   const peutValider = estEncadreur || estAdmin;
 
+  // Rechargement de l'onglet affiché (les données précédentes restent visibles pendant la requête)
   useEffect(() => {
     if (onglet === "stages") {
-      chargerStages();
+      apiClient
+        .get("/stages")
+        .then(({ data }) => {
+          setStages(data.data || data);
+          setStagesError(null);
+        })
+        .catch(() => setStagesError("Impossible de charger les stages."))
+        .finally(() => setStagesLoading(false));
     } else {
-      chargerOffres();
+      offresStageApi
+        .getOffres()
+        .then(({ data }) => {
+          setOffres(data.data ?? data);
+          setOffresError(null);
+        })
+        .catch(() => setOffresError("Impossible de charger les offres de stage."))
+        .finally(() => setOffresLoading(false));
     }
   }, [onglet]);
-
-  const chargerStages = () => {
-    setStagesLoading(true);
-    setStagesError(null);
-    apiClient
-      .get("/stages")
-      .then(({ data }) => setStages(data.data || data))
-      .catch(() => setStagesError("Impossible de charger les stages."))
-      .finally(() => setStagesLoading(false));
-  };
-
-  const chargerOffres = () => {
-    setOffresLoading(true);
-    setOffresError(null);
-    offresStageApi
-      .getOffres()
-      .then(({ data }) => setOffres(data.data ?? data))
-      .catch(() => setOffresError("Impossible de charger les offres de stage."))
-      .finally(() => setOffresLoading(false));
-  };
 
   // Stage action handlers
   const handleValider = async (stageId) => {

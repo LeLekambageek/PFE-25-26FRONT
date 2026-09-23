@@ -13,39 +13,61 @@ export default function ComptesListPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
+  // Incrémenté pour forcer un rechargement (après création / suppression)
+  const [rechargement, setRechargement] = useState(0);
+
+  // L'état "loading" est posé par les gestionnaires d'événements ; l'effet ne
+  // fait que des setState asynchrones (et ignore une réponse devenue obsolète).
   useEffect(() => {
-    chargerComptes();
-  }, [onglet, currentPage]);
+    let obsolete = false;
+    const params = { page: currentPage };
+    const requete =
+      onglet === "etudiant"
+        ? administrationApi.listerEtudiants(params)
+        : onglet === "enseignant"
+          ? administrationApi.getComptesEnseignants(params)
+          : administrationApi.getComptesJury(params);
 
-  const chargerComptes = async () => {
+    requete
+      .then(({ data: rawData }) => {
+        if (obsolete) return;
+        // Réponse paginée ou tableau brut
+        if (rawData.data && Array.isArray(rawData.data)) {
+          setListe(rawData.data);
+          setTotalPages(rawData.last_page || 1);
+        } else {
+          setListe(Array.isArray(rawData) ? rawData : []);
+          setTotalPages(1);
+        }
+        setError(null);
+      })
+      .catch(() => {
+        if (obsolete) return;
+        setError("Impossible de charger les comptes pour cet onglet.");
+        setListe([]);
+      })
+      .finally(() => !obsolete && setLoading(false));
+
+    return () => {
+      obsolete = true;
+    };
+  }, [onglet, currentPage, rechargement]);
+
+  const chargerComptes = () => {
     setLoading(true);
-    setError(null);
-    try {
-      let response;
-      if (onglet === "etudiant") {
-        response = await administrationApi.listerEtudiants();
-      } else if (onglet === "enseignant") {
-        response = await administrationApi.getComptesEnseignants();
-      } else if (onglet === "jury") {
-        response = await administrationApi.getComptesJury();
-      }
+    setRechargement((n) => n + 1);
+  };
 
-      // Handle paginated response or raw array
-      const rawData = response.data;
-      if (rawData.data && Array.isArray(rawData.data)) {
-        setListe(rawData.data);
-        setCurrentPage(rawData.current_page || 1);
-        setTotalPages(rawData.last_page || 1);
-      } else {
-        setListe(Array.isArray(rawData) ? rawData : []);
-        setTotalPages(1);
-      }
-    } catch (err) {
-      setError("Impossible de charger les comptes pour cet onglet.");
-      setListe([]);
-    } finally {
-      setLoading(false);
-    }
+  const changerOnglet = (nouvelOnglet) => {
+    if (nouvelOnglet === onglet) return;
+    setOnglet(nouvelOnglet);
+    setCurrentPage(1);
+    setLoading(true);
+  };
+
+  const changerPage = (page) => {
+    setCurrentPage(page);
+    setLoading(true);
   };
 
   const handleSupprimer = async (id) => {
@@ -117,22 +139,31 @@ export default function ComptesListPage() {
       <div className="tabs" style={{ display: "flex", gap: 10, borderBottom: "2px solid var(--border)", marginBottom: 24, paddingBottom: 8 }}>
         <button
           className={`btn ${onglet === "etudiant" ? "btn-primary" : "btn-ghost"}`}
-          onClick={() => { setOnglet("etudiant"); setCurrentPage(1); }}
+          onClick={() => changerOnglet("etudiant")}
         >
           Étudiants
         </button>
         <button
           className={`btn ${onglet === "enseignant" ? "btn-primary" : "btn-ghost"}`}
-          onClick={() => { setOnglet("enseignant"); setCurrentPage(1); }}
+          onClick={() => changerOnglet("enseignant")}
         >
           Enseignants Encadreurs
         </button>
         <button
           className={`btn ${onglet === "jury" ? "btn-primary" : "btn-ghost"}`}
-          onClick={() => { setOnglet("jury"); setCurrentPage(1); }}
+          onClick={() => changerOnglet("jury")}
         >
           Membres du Jury
         </button>
+      </div>
+
+      <div className="form-group" style={{ marginBottom: 16 }}>
+        <input
+          type="search"
+          placeholder="Rechercher par nom, email ou matricule (page courante)"
+          value={recherche}
+          onChange={(e) => setRecherche(e.target.value)}
+        />
       </div>
 
       {loading ? (
@@ -226,7 +257,7 @@ export default function ComptesListPage() {
           <button
             className="btn btn-ghost"
             disabled={currentPage === 1}
-            onClick={() => setCurrentPage((c) => c - 1)}
+            onClick={() => changerPage(currentPage - 1)}
           >
             Précédent
           </button>
@@ -236,7 +267,7 @@ export default function ComptesListPage() {
           <button
             className="btn btn-ghost"
             disabled={currentPage === totalPages}
-            onClick={() => setCurrentPage((c) => c + 1)}
+            onClick={() => changerPage(currentPage + 1)}
           >
             Suivant
           </button>

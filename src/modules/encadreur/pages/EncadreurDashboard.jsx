@@ -7,19 +7,12 @@ export default function EncadreurDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchEtudiants();
+    encadreurApi
+      .getMesEtudiants()
+      .then((response) => setEtudiants(response.data))
+      .catch((error) => console.error("Error fetching students:", error))
+      .finally(() => setLoading(false));
   }, []);
-
-  const fetchEtudiants = async () => {
-    try {
-      const response = await encadreurApi.getMesEtudiants();
-      setEtudiants(response.data);
-    } catch (error) {
-      console.error("Error fetching students:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   if (loading) return <div className="loading-state">Chargement...</div>;
 

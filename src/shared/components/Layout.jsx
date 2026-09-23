@@ -14,14 +14,8 @@ import {
   Building2,
   ChevronLeft,
   ChevronRight,
-  Search,
-  Plus,
-  Sparkles,
-  CalendarDays,
-  Menu,
-  Command
+  Menu
 } from "lucide-react";
-import NotificationBell from "./NotificationBell";
 
 const NAV_ITEMS = [
   { to: "/etudiant", label: "Tableau de bord", roles: ["etudiant"], icon: LayoutDashboard },
@@ -59,7 +53,9 @@ export default function Layout() {
   const location = useLocation();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  // Menu mobile ouvert sur une page donnée : il se referme de lui-même à la navigation
+  const [menuOuvertSur, setMenuOuvertSur] = useState(null);
+  const isMobileOpen = menuOuvertSur === location.pathname;
 
   useEffect(() => {
     const mql = window.matchMedia("(max-width: 1023px)");
@@ -69,10 +65,6 @@ export default function Layout() {
     return () => mql.removeEventListener("change", handleChange);
   }, []);
 
-  useEffect(() => {
-    setIsMobileOpen(false);
-  }, [location.pathname]);
-
   const navItems = NAV_ITEMS.filter((item) => {
     if (item.roles && !item.roles.some(hasRole)) return false;
     return true;
@@ -81,7 +73,6 @@ export default function Layout() {
   const initiales = user?.name
     ? user.name.split(" ").map((p) => p[0]).join("").slice(0, 2).toUpperCase()
     : "?";
-  const roleLabel = user?.roles?.[0]?.name?.replace(/_/g, " ") || "";
 
   const handleLogout = async () => {
     await logout?.();
@@ -111,7 +102,7 @@ export default function Layout() {
       {isMobile && isMobileOpen && (
         <div
           className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
-          onClick={() => setIsMobileOpen(false)}
+          onClick={() => setMenuOuvertSur(null)}
         />
       )}
       <motion.aside
@@ -138,7 +129,7 @@ export default function Layout() {
             </div>
             {isMobile ? (
               <button
-                onClick={() => setIsMobileOpen(false)}
+                onClick={() => setMenuOuvertSur(null)}
                 className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10 border border-white/20 text-white hover:bg-white/15 transition"
                 aria-label="Fermer la barre latérale"
               >
@@ -232,7 +223,7 @@ export default function Layout() {
             <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
               <div className="flex min-w-0 items-start gap-4">
                 <button
-                  onClick={() => setIsMobileOpen(true)}
+                  onClick={() => setMenuOuvertSur(location.pathname)}
                   className="lg:hidden mt-1 flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-black/5 border border-black/10 text-black hover:bg-black/10 transition"
                   aria-label="Ouvrir la barre latérale"
                 >

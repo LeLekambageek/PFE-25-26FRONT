@@ -2,20 +2,20 @@ import apiClient from "./apiClient";
 
 export const administrationApi = {
   // Comptes etudiants
-  listerEtudiants: () => apiClient.get("/etudiants"),
+  listerEtudiants: (params) => apiClient.get("/etudiants", { params }),
   creerCompteEtudiant: (data) => apiClient.post("/administration/etudiants", data),
   modifierEtudiant: (id, data) => apiClient.put(`/administration/etudiants/${id}`, data),
   supprimerEtudiant: (id) => apiClient.delete(`/administration/etudiants/${id}`),
 
   // Comptes enseignants
-  getComptesEnseignants: () => apiClient.get("/administration/enseignants"),
+  getComptesEnseignants: (params) => apiClient.get("/administration/enseignants", { params }),
   creerCompteEnseignant: (data) => apiClient.post("/administration/enseignants", data),
   modifierEnseignant: (id, data) => apiClient.put(`/administration/enseignants/${id}`, data),
   supprimerEnseignant: (id) => apiClient.delete(`/administration/enseignants/${id}`),
   attribuerRoleEncadreur: (enseignantId) => apiClient.post(`/administration/enseignants/${enseignantId}/role-encadreur`),
 
   // Comptes jury
-  getComptesJury: () => apiClient.get("/administration/jury"),
+  getComptesJury: (params) => apiClient.get("/administration/jury", { params }),
   creerCompteJury: (data) => apiClient.post("/administration/jury", data),
   modifierJury: (id, data) => apiClient.put(`/administration/jury/${id}`, data),
   supprimerJury: (id) => apiClient.delete(`/administration/jury/${id}`),
