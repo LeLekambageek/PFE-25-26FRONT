@@ -20,8 +20,12 @@ export default function LoginPage() {
     try {
       const user = await login(email, password);
       navigate(roleHomePath(user), { replace: true });
-    } catch {
-      setError("Email ou mot de passe incorrect.");
+    } catch (err) {
+      setError(
+        err.response?.status === 429
+          ? "Trop de tentatives de connexion. Réessayez dans une minute."
+          : "Email ou mot de passe incorrect."
+      );
     } finally {
       setLoading(false);
     }

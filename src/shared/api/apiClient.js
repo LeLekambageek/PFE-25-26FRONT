@@ -18,6 +18,12 @@ apiClient.interceptors.response.use(
     if (error.response?.status === 401) {
       localStorage.removeItem("api_token");
       window.location.href = "/login";
+    } else if (
+      error.response?.status === 403 &&
+      error.response.data?.code === "must_change_password" &&
+      window.location.pathname !== "/changer-mot-de-passe"
+    ) {
+      window.location.href = "/changer-mot-de-passe";
     }
     return Promise.reject(error);
   }

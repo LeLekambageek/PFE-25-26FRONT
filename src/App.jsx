@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from "./shared/auth/AuthContext";
 import ProtectedRoute from "./shared/auth/ProtectedRoute";
 import Layout from "./shared/components/Layout";
 import LoginPage from "./shared/auth/LoginPage";
+import ChangerMotDePassePage from "./shared/auth/ChangerMotDePassePage";
 import UnauthorizedPage from "./shared/components/UnauthorizedPage";
 import StagesListPage from "./modules/stages/pages/StagesListPage";
 import EncadrementsListPage from "./modules/encadrements/pages/EncadrementsListPage";
@@ -29,6 +30,7 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/changer-mot-de-passe" element={<ChangerMotDePassePage />} />
 
           <Route
             element={
