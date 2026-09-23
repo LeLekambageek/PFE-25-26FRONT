@@ -4,52 +4,62 @@ import { useAuth } from "../../../shared/auth/AuthContext";
 import EncadrementForm from "../components/EncadrementForm";
 import StatusBadge from "../../../shared/components/StatusBadge";
 
+// Stage et mémoire ont des tables distinctes : deux encadrements peuvent avoir le même id.
+// On identifie donc toujours un encadrement par son type + son id.
+const cle = (enc) => `${enc.type}-${enc.id}`;
+const urlEncadrement = (enc) => `/encadrements/${enc.type}/${enc.id}`;
+
+const TYPE_LIBELLES = { stage: "Stage", memoire: "Mémoire" };
+
 export default function EncadrementsListPage() {
   const { user } = useAuth();
   const [encadrements, setEncadrements] = useState([]);
   const [enseignants, setEnseignants] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [editingId, setEditingId] = useState(null);
+  const [editingKey, setEditingKey] = useState(null);
   const [selectedEnseignant, setSelectedEnseignant] = useState("");
 
-  const chargerEncadrements = () => {
-    setLoading(true);
+  useEffect(() => {
     apiClient
       .get("/encadrements")
-      .then(({ data }) => setEncadrements(data.data))
+      .then(({ data }) =>
+        setEncadrements(
+          [...data.stages, ...data.memoires].sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+        )
+      )
       .catch(() => setError("Impossible de charger les encadrements."))
       .finally(() => setLoading(false));
-  };
-
-  useEffect(() => {
-    chargerEncadrements();
     apiClient.get("/annuaire/enseignants").then(({ data }) => setEnseignants(data)).catch(() => {});
   }, []);
+
+  const remplacer = (majEnc) => {
+    setEncadrements((prev) => prev.map((e) => (cle(e) === cle(majEnc) ? majEnc : e)));
+  };
 
   const handleEncadrementCreated = (nouvel) => {
     setEncadrements((prev) => [nouvel, ...prev]);
   };
 
-  const handleAjouterEntree = async (encadrementId) => {
+  const handleAjouterEntree = async (enc) => {
     const contenu = prompt("Contenu de l'entrée :");
     if (!contenu) return;
 
     try {
-      await apiClient.post(`/encadrements/${encadrementId}/entree`, { contenu });
+      await apiClient.post(`${urlEncadrement(enc)}/entrees`, { contenu });
       alert("Entrée ajoutée.");
     } catch (err) {
       alert("Action impossible : " + (err.response?.data?.message || "erreur inconnue"));
     }
   };
 
-  const handlePlanifierRdv = async (encadrementId) => {
+  const handlePlanifierRdv = async (enc) => {
     const datePrevue = prompt("Date et heure du rendez-vous (format: 2026-08-15 14:00:00) :");
     if (!datePrevue) return;
     const sujet = prompt("Sujet du rendez-vous (optionnel) :") || null;
 
     try {
-      await apiClient.post(`/encadrements/${encadrementId}/rendez-vous`, {
+      await apiClient.post(`${urlEncadrement(enc)}/rendez-vous`, {
         date_prevue: datePrevue,
         sujet,
       });
@@ -60,33 +70,33 @@ export default function EncadrementsListPage() {
   };
 
   const ouvrirEdition = (enc) => {
-    setEditingId(enc.id);
+    setEditingKey(cle(enc));
     setSelectedEnseignant(enc.enseignant_id ?? "");
   };
 
   const annulerEdition = () => {
-    setEditingId(null);
+    setEditingKey(null);
     setSelectedEnseignant("");
   };
 
-  const confirmerModification = async (encadrementId) => {
+  const confirmerModification = async (enc) => {
     if (!selectedEnseignant) return;
 
     try {
-      const { data } = await apiClient.put(`/encadrements/${encadrementId}`, {
+      const { data } = await apiClient.put(urlEncadrement(enc), {
         enseignant_id: selectedEnseignant,
       });
-      setEncadrements((prev) => prev.map((e) => (e.id === encadrementId ? data : e)));
+      remplacer(data);
       annulerEdition();
     } catch (err) {
       alert("Modification impossible : " + (err.response?.data?.message || "erreur inconnue"));
     }
   };
 
-  const handleCloturer = async (encadrementId) => {
+  const handleCloturer = async (enc) => {
     try {
-      await apiClient.post(`/encadrements/${encadrementId}/cloturer`);
-      chargerEncadrements();
+      const { data } = await apiClient.post(`${urlEncadrement(enc)}/cloturer`);
+      remplacer(data);
     } catch (err) {
       alert("Clôture impossible : " + (err.response?.data?.message || "erreur inconnue"));
     }
@@ -114,13 +124,18 @@ export default function EncadrementsListPage() {
       {encadrements.length === 0 && <p className="empty-state">Aucun encadrement pour le moment.</p>}
 
       {encadrements.map((enc) => (
-        <div key={enc.id} className={`dossier dossier-full status-${enc.statut}`}>
+        <div key={cle(enc)} className={`dossier dossier-full status-${enc.statut}`}>
           <div className="dossier-head">
-            <p className="dossier-title">Encadrement #{enc.id} — {enc.type}</p>
+            <p className="dossier-title">
+              {TYPE_LIBELLES[enc.type]} — {enc.stage?.titre ?? enc.memoire?.titre ?? `#${enc.id}`}
+            </p>
             <StatusBadge statut={enc.statut} />
           </div>
+          <p className="dossier-meta">
+            Étudiant : {enc.etudiant?.user?.name ?? "—"} · Encadreur : {enc.enseignant?.user?.name ?? "—"}
+          </p>
 
-          {editingId === enc.id ? (
+          {editingKey === cle(enc) ? (
             <div className="inline-edit">
               <select value={selectedEnseignant} onChange={(e) => setSelectedEnseignant(e.target.value)}>
                 <option value="">-- Choisir un enseignant --</option>
@@ -130,22 +145,22 @@ export default function EncadrementsListPage() {
                   </option>
                 ))}
               </select>
-              <button className="btn btn-primary" onClick={() => confirmerModification(enc.id)}>Confirmer</button>
+              <button className="btn btn-primary" onClick={() => confirmerModification(enc)}>Confirmer</button>
               <button className="btn btn-ghost" onClick={annulerEdition}>Annuler</button>
             </div>
           ) : (
             <div className="actions-row">
               {peutAjouterEntree && (
-                <button className="btn" onClick={() => handleAjouterEntree(enc.id)}>Ajouter une entrée</button>
+                <button className="btn" onClick={() => handleAjouterEntree(enc)}>Ajouter une entrée</button>
               )}
               {peutGererEnseignant && (
-                <button className="btn" onClick={() => handlePlanifierRdv(enc.id)}>Planifier un rendez-vous</button>
+                <button className="btn" onClick={() => handlePlanifierRdv(enc)}>Planifier un rendez-vous</button>
               )}
               {peutModifier && (
                 <button className="btn" onClick={() => ouvrirEdition(enc)}>Modifier l'enseignant</button>
               )}
               {peutGererEnseignant && enc.statut === "actif" && (
-                <button className="btn btn-danger" onClick={() => handleCloturer(enc.id)}>Clôturer</button>
+                <button className="btn btn-danger" onClick={() => handleCloturer(enc)}>Clôturer</button>
               )}
             </div>
           )}

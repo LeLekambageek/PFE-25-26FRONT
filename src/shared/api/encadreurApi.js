@@ -16,10 +16,10 @@ export const encadreurApi = {
   validerVersionFinale: (versionId) => apiClient.post(`/versions/${versionId}/valider-finale`),
   accorderEligibiliteSoutenance: (memoireId) => apiClient.post(`/memoires/${memoireId}/accorder-eligibilite-soutenance`),
 
-  // Rendez-vous et carnet
-  organiserRendezVous: (encadrementId, data) => apiClient.post(`/encadrements/${encadrementId}/rendez-vous`, data),
-  getEntrees: (encadrementId) => apiClient.get(`/encadrements/${encadrementId}/entree`),
-  ajouterEntree: (encadrementId, data) => apiClient.post(`/encadrements/${encadrementId}/entree`, data),
+  // Rendez-vous et carnet (type = "stage" | "memoire", fourni par le champ `type` de l'encadrement)
+  organiserRendezVous: (type, encadrementId, data) => apiClient.post(`/encadrements/${type}/${encadrementId}/rendez-vous`, data),
+  getEntrees: (type, encadrementId) => apiClient.get(`/encadrements/${type}/${encadrementId}/entrees`),
+  ajouterEntree: (type, encadrementId, data) => apiClient.post(`/encadrements/${type}/${encadrementId}/entrees`, data),
 
 
 };
